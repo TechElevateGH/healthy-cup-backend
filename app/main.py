@@ -1,13 +1,15 @@
 import os
 from flask import Flask
+from flask_cors import CORS
 
-from app.ents.employee import db, employees_blueprint
+from app.ents.employee import db, employee_blueprint
 
 app = Flask(__name__, instance_relative_config=True)
+CORS(app)
 
 
 def init_db():
-
+    """Initialize SQLite database and create tables."""
     app.config.from_mapping(
         SQLALCHEMY_DATABASE_URI="sqlite:///roselle.db",
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
@@ -22,7 +24,8 @@ def init_db():
 
 
 def register_blueprints():
-    app.register_blueprint(employees_blueprint)
+    """Register app blueprints."""
+    app.register_blueprint(employee_blueprint)
 
 
 if __name__ == "__main__":

@@ -2,15 +2,27 @@ from pydantic import BaseModel, EmailStr
 
 
 class EmployeeBase(BaseModel):
+    """Base pydantic schema for employees."""
+
     first_name: str
     middle_name: str = ""
     last_name: str
-    email: str
+    email: EmailStr
 
 
-class EmployeeIn(EmployeeBase):
+class EmployeeCreate(EmployeeBase):
+    """Schema for creating employees."""
+
     ...
 
 
-class EmployeeOut(EmployeeBase):
+class EmployeeRead(EmployeeBase):
+    """Schema for read employees"""
+
     id: int
+    full_name: str
+
+class EmployeeUpdate(EmployeeBase):
+    """Schema for creating employees."""
+
+    ...

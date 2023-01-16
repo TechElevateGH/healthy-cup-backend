@@ -1,29 +1,42 @@
 import json
 from flask import Blueprint, request
+from pydantic import ValidationError
 
-from app.ents.employee.models import Employee
-from app.ents.employee.schema import EmployeeOut, EmployeeIn
+from app.ents.employee.crud import crud
+from app.utils import (
+    not_exist_error_response,
+    success_response,
+    success_response_multi,
+    validation_error_reponse,
+)
 
 bp: Blueprint = Blueprint("employees", __name__, url_prefix="/employees")
 
 
 @bp.route("/", methods=["POST"])
 def create_employee():
-    """Create an employees."""
-    data: EmployeeIn = json.loads(request.data)
-    employee = Employee.create(data)
-    return employee.dict()
+    """Create an employee."""
+    try:
+        data = json.loads(request.data)
+        employee = crud.create(data)
+        return success_response(data=employee, code=202)
+    except ValidationError as e:
+        return validation_error_reponse(error=e, code=400)
 
 
 @bp.route("/", methods=["GET"])
 def get_employees():
     """Get all employees."""
-    employees: list[EmployeeOut] = Employee.read_multi()
-    return [employee.dict() for employee in employees]
+    employees = crud.read_multi()
+    return success_response_multi(data=employees, code=200)
 
 
 @bp.route("/<string:employee_id>", methods=["GET"])
 def get_employee(employee_id: int):
     """Get an employees."""
-    employee: EmployeeOut | None = Employee.read(employee_id=employee_id)
-    return employee.dict() if employee else {}
+    employee = crud.read(employee_id=employee_id)
+    return (
+        success_response(data=employee, code=200)
+        if employee
+        else not_exist_error_response(error="Employee does not exist.", code=404)
+    )
