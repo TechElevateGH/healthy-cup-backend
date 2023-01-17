@@ -1,5 +1,6 @@
 from typing import Optional
-from app.ents.base.crud import CRUDBase, db
+
+from app.ents.base.crud import CRUDBase
 from app.ents.employee.models import Employee
 from app.ents.employee.schema import EmployeeCreate, EmployeeRead
 
@@ -19,13 +20,8 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeCreate, EmployeeRead, EmployeeRead
 
     def create(self, data: EmployeeCreate) -> EmployeeRead:
         """Create an employee with `data`."""
-        employee = Employee(**data, full_name=self.__create_full_name(data))
-
-        db.session.add(employee)
-        db.session.commit()
-        db.session.refresh(employee)
-
-        return EmployeeRead(**vars(employee))
+        data.__setitem__("full_name", self.__create_full_name(data))
+        return super().create(data)
 
 
 crud = EmployeeCRUD(Employee, EmployeeRead)

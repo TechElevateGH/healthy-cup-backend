@@ -16,23 +16,28 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, ReadSchemaType, UpdateSchema
     def __init__(self, model: Type[ModelType], read_schema: Type[ReadSchemaType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
-
         """
         self.model = model
         self.read_schema = read_schema
 
     def read(self, obj_id: int) -> Optional[ReadSchemaType]:
-        """Read obj with id `obj_id`."""
+        """
+        Read object with id `obj_id`.
+        """
         obj = self.model.query.filter_by(id=obj_id).first()
         return self.read_schema(**vars(obj)) if obj else None
 
-    def read_multi(self) -> list[ReadSchemaType]:
-        """Read all objs."""
+    def read_multi(self, limit: int = 100, skip: int = 0) -> list[ReadSchemaType]:
+        """
+        Read all objects.
+        """
         objs = [self.read_schema(**vars(obj)) for obj in self.model.query.all()]
         return objs
 
     def create(self, data: CreateSchemaType) -> ReadSchemaType:
-        """Create a obj with `data`."""
+        """
+        Create a obj with `data`.
+        """
         obj = self.model(**data)
 
         db.session.add(obj)

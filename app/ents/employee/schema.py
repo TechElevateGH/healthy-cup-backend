@@ -7,7 +7,11 @@ class EmployeeBase(BaseModel):
     first_name: str
     middle_name: str = ""
     last_name: str
+    full_name: str = ""
     email: EmailStr
+
+    def __setitem__(self, field, value):
+        self.field = value
 
 
 class EmployeeCreate(EmployeeBase):
@@ -21,6 +25,7 @@ class EmployeeRead(EmployeeBase):
 
     id: int
     full_name: str
+
 
 class EmployeeUpdate(EmployeeBase):
     """Schema for creating employees."""

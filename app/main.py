@@ -1,20 +1,17 @@
 import os
 from flask import Flask
-from flask_cors import CORS
 
+from app.core.config import config
 from app.ents.employee import db, employee_blueprint
 
-app = Flask(__name__, instance_relative_config=True)
-CORS(app)
 
-
-def init_db():
-    """Initialize SQLite database and create tables."""
+def init_db(app: Flask) -> None:
+    """Initialize SQLite database and create tables for `app`."""
     app.config.from_mapping(
-        SQLALCHEMY_DATABASE_URI="sqlite:///roselle.db",
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
         DATABASE=os.path.join(app.instance_path, "roselle.sqlite"),
-        SQLALCHEMY_ECHO=True,
+        SQLALCHEMY_DATABASE_URI=config.get("SQLALCHEMY_DATABASE_URI"),
+        SQLALCHEMY_TRACK_MODIFICATIONS=config.get("SQLALCHEMY_TRACK_MODIFICATIONS"),
+        SQLALCHEMY_ECHO=config.get("SQLALCHEMY_ECHO"),
     )
 
     db.init_app(app)
@@ -23,12 +20,13 @@ def init_db():
         db.create_all()
 
 
-def register_blueprints():
-    """Register app blueprints."""
+def register_blueprints(app: Flask) -> None:
+    """Register `app` blueprints."""
     app.register_blueprint(employee_blueprint)
 
 
-if __name__ == "__main__":
-    init_db()
-    register_blueprints()
-    app.run(debug=True)
+def create_app() -> Flask:
+    app = Flask(__name__, instance_relative_config=True)
+    init_db(app)
+    register_blueprints(app)
+    return app

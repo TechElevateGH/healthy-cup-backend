@@ -1,3 +1,3 @@
 
 run:
-		python app/main.py
+		flask run
