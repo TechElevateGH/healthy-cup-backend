@@ -7,21 +7,17 @@ class EmployeeBase(BaseModel):
     first_name: str
     middle_name: str = ""
     last_name: str
-    full_name: str = ""
     email: EmailStr
 
-    def __setitem__(self, field, value):
-        self.field = value
 
+class EmployeeCreateInput(EmployeeBase):
+    """Input schema for creating employees."""
 
-class EmployeeCreate(EmployeeBase):
-    """Schema for creating employees."""
-
-    ...
+    password: str
 
 
 class EmployeeRead(EmployeeBase):
-    """Schema for read employees"""
+    """Schema for an employee that is read."""
 
     id: int
     full_name: str
@@ -31,3 +27,10 @@ class EmployeeUpdate(EmployeeBase):
     """Schema for creating employees."""
 
     ...
+
+
+class EmployeeCreateDB(EmployeeBase):
+    """Database schema for adding an employee."""
+
+    full_name: str = ""
+    hashed_password = ""

@@ -1,14 +1,15 @@
 from typing import Optional
+from app.core.security import security
 
 from app.ents.base.crud import CRUDBase
 from app.ents.employee.models import Employee
-from app.ents.employee.schema import EmployeeCreate, EmployeeRead
+from app.ents.employee.schema import EmployeeCreateDB, EmployeeCreateInput, EmployeeRead
 
 
-class EmployeeCRUD(CRUDBase[Employee, EmployeeCreate, EmployeeRead, EmployeeRead]):
-    def __create_full_name(self, data):
+class EmployeeCRUD(CRUDBase[Employee, EmployeeCreateDB, EmployeeRead]):
+    def __create_full_name(self, data: EmployeeCreateInput):
         """Creates the full name of the employee."""
-        return data["first_name"] + " " + data["middle_name"] + " " + data["last_name"]
+        return data.first_name + " " + data.middle_name + " " + data.last_name
 
     def read(self, employee_id: int) -> Optional[EmployeeRead]:
         """Read employee with id `employee_id`."""
@@ -18,10 +19,19 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeCreate, EmployeeRead, EmployeeRead
         """Read all employees."""
         return super().read_multi()
 
-    def create(self, data: EmployeeCreate) -> EmployeeRead:
+    def create(self, data: EmployeeCreateInput) -> EmployeeRead:
         """Create an employee with `data`."""
-        data.__setitem__("full_name", self.__create_full_name(data))
-        return super().create(data)
+
+        employee_obj = EmployeeCreateDB(
+            **{
+                "hashed_password": security.hash_password(data.password),
+                "full_name": self.__create_full_name(data),
+            },
+            **data.dict(
+                exclude={"password"},
+            )
+        )
+        return super().create(employee_obj)
 
 
 crud = EmployeeCRUD(Employee, EmployeeRead)

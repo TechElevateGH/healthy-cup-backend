@@ -7,12 +7,14 @@ db: SQLAlchemy = SQLAlchemy()
 
 
 ModelType = TypeVar("ModelType", bound=db.Model)  # type: ignore
-CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
+DBCreateSchemaType = TypeVar("DBCreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 ReadSchemaType = TypeVar("ReadSchemaType", bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, ReadSchemaType, UpdateSchemaType]):
+class CRUDBase(Generic[ModelType, DBCreateSchemaType, ReadSchemaType]):
+    """ """
+
     def __init__(self, model: Type[ModelType], read_schema: Type[ReadSchemaType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -34,11 +36,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, ReadSchemaType, UpdateSchema
         objs = [self.read_schema(**vars(obj)) for obj in self.model.query.all()]
         return objs
 
-    def create(self, data: CreateSchemaType) -> ReadSchemaType:
+    def create(self, data: DBCreateSchemaType) -> ReadSchemaType:
         """
         Create a obj with `data`.
         """
-        obj = self.model(**data)
+        obj = self.model(**data.dict())
 
         db.session.add(obj)
         db.session.commit()

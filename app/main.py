@@ -1,7 +1,9 @@
 import os
+from functools import lru_cache
 from flask import Flask
 
 from app.core.config import config
+from app.core.security import security
 from app.ents.employee import db, employee_blueprint
 
 
@@ -27,6 +29,10 @@ def register_blueprints(app: Flask) -> None:
 
 def create_app() -> Flask:
     app = Flask(__name__, instance_relative_config=True)
+    security.bcrypt.init_app(app)
     init_db(app)
     register_blueprints(app)
     return app
+
+
+app = create_app()

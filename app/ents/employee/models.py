@@ -1,5 +1,4 @@
 from app.ents.base.crud import db
-from app.ents.employee.schema import EmployeeCreate, EmployeeRead
 
 
 class Employee(db.Model):  # type: ignore
@@ -12,3 +11,4 @@ class Employee(db.Model):  # type: ignore
     last_name = db.Column(db.String)
     email = db.Column(db.String)
     full_name = db.Column(db.String)
+    hashed_password = db.Column(db.String)
