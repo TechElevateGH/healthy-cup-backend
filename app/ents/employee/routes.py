@@ -8,7 +8,7 @@ from app.core.security import security
 from app.ents.employee.crud import crud
 from app.ents.employee.deps import authenticate, active_employee_required
 from app.ents.employee.models import Employee
-from app.ents.employee.schema import EmployeeCreateInput
+from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 
 from app.utilities.errors import MissingLoginCredentials, EmployeeDoesNotExist
 from app.utilities.utils import (
@@ -43,7 +43,7 @@ def get_employees(_: Employee):
 @bp.route("/<string:employee_id>", methods=["GET"])
 def get_employee(employee_id: str):
     """Get an employee."""
-    employee = crud.read(employee_id=employee_id)
+    employee = crud.read_by_id(employee_id=employee_id)
     return (
         success_response(data=employee, code=HTTPStatus.OK)
         if employee
@@ -60,7 +60,11 @@ def login_employee():
 
     employee = authenticate(form.get("email"),form.get("password"))
     if employee:
-        return success_response(data=security.create_token(employee), code=HTTPStatus.OK)
+        return success_response(
+            data=EmployeeRead(**employee.dict()), 
+            code=HTTPStatus.OK, 
+            token=security.create_token(employee))
+
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.OK)
 
     

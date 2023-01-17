@@ -19,7 +19,7 @@ class EmployeeCreateInput(EmployeeBase):
 class EmployeeRead(EmployeeBase):
     """Schema for an employee that is read."""
 
-    id: int
+    public_id: str
     full_name: str
 
 

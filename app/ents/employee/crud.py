@@ -16,13 +16,14 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeRead]):
         """Creates the full name of the employee."""
         return data.first_name + " " + data.middle_name + " " + data.last_name
 
-    def read(self, employee_id: str) -> Optional[EmployeeRead]:
+    def read_by_id(self, employee_id: str) -> Optional[EmployeeRead]:
         """Read employee with id `employee_id`."""
-        return super().read(employee_id)
+        return super().read_by_id(employee_id)
 
     def read_by_email(self, employee_email: str) -> Optional[EmployeeInDB]:
         """Read employee with email `employee_email`."""
-        return Employee.query.filter_by(email=employee_email).first()
+        employee = Employee.query.filter_by(email=employee_email).first()
+        return EmployeeInDB(**vars(employee))
 
     def read_multi(self) -> list[EmployeeRead]:
         """Read all employees."""

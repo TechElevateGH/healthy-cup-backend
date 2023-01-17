@@ -22,7 +22,7 @@ class CRUDBase(Generic[ModelType, DBSchemaType, ReadSchemaType]):
         self.model = model
         self.read_schema = read_schema
 
-    def read(self, obj_id: str) -> Optional[ReadSchemaType]:
+    def read_by_id(self, obj_id: str) -> Optional[ReadSchemaType]:
         """
         Read object with id `obj_id`.
         """
