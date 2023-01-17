@@ -5,6 +5,7 @@ from flask import Blueprint, request
 from pydantic import ValidationError
 
 from app.ents.employee.crud import crud
+from app.ents.employee.schema import EmployeeCreateInput
 from app.utilities.utils import (
     not_exist_error_response,
     success_response,
@@ -20,7 +21,7 @@ def create_employee():
     """Create an employee."""
     try:
         data = json.loads(request.data)
-        employee = crud.create(data)
+        employee = crud.create(EmployeeCreateInput(**data))
         return success_response(data=employee, code=HTTPStatus.OK)
     except ValidationError as e:
         return validation_error_reponse(error=e, code=HTTPStatus.BAD_REQUEST)
