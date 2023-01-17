@@ -1,12 +1,12 @@
 from pydantic import ValidationError
 
 
-def success_response(*, data, code):
-    return {"data": data.dict()}, code
+def success_response(*, data, code, token=""):
+    return {"data": data.dict()}, code, {"Authorization": token}
 
 
-def success_response_multi(*, data, code):
-    return {"data": [item.dict() for item in data]}, code
+def success_response_multi(*, data, code, token=""):
+    return {"data": [item.dict() for item in data]}, code, {"Authorization": token}
 
 
 def validation_error_reponse(*, error: ValidationError, code):

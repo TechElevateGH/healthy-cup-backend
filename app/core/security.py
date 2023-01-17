@@ -10,13 +10,6 @@ from app.utilities.errors import (
 )
 from app.utilities.utils import error_response
 from app.core.config import config
-from pydantic import BaseModel
-
-
-class Token(BaseModel):
-    """Token representation."""
-
-    token: str
 
 
 class Security:
@@ -44,7 +37,7 @@ class Security:
             algorithm="HS256",
         )
 
-        return Token(token=token)  # type: ignore
+        return token
 
     def verify_token(self):
         """Returns the decoded token in the request header (if valid)."""
