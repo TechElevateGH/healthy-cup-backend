@@ -1,0 +1,1 @@
+Authentication with JWT: https://www.geeksforgeeks.org/using-jwt-for-user-authentication-in-flask/

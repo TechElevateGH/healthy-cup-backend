@@ -24,13 +24,21 @@ class EmployeeRead(EmployeeBase):
 
 
 class EmployeeUpdate(EmployeeBase):
-    """Schema for creating employees."""
+    """Schema for updating employees."""
 
     ...
 
 
-class EmployeeCreateDB(EmployeeBase):
+class EmployeeReadDB(EmployeeBase):
+    """Schema for an employee that is read."""
+
+    id: int
+    full_name: str
+
+
+class EmployeeInDB(EmployeeBase):
     """Database schema for adding an employee."""
 
+    public_id: str = ""
     full_name: str = ""
     hashed_password = ""

@@ -15,5 +15,5 @@ def validation_error_reponse(*, error: ValidationError, code):
     }, code
 
 
-def not_exist_error_response(*, error, code):
+def error_response(*, error, code):
     return {"errors": {"msg": error}}, code
