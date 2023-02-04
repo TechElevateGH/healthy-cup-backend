@@ -13,7 +13,6 @@ from app.core.config import config
 
 
 class Security:
-
     bcrypt = Bcrypt()
 
     def hash_password(self, password: str) -> str:
@@ -43,8 +42,7 @@ class Security:
         """Returns the decoded token in the request header (if valid)."""
         token = None
 
-        if "Authorization" in request.headers:
-            token = request.headers["Authorization"]
+        token = request.headers.get("Authorization")
         if not token:
             return error_response(
                 error=MissingTokenError.msg, code=HTTPStatus.UNAUTHORIZED

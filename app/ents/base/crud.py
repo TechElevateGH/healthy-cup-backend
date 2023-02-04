@@ -47,3 +47,15 @@ class CRUDBase(Generic[ModelType, DBSchemaType, ReadSchemaType]):
         db.session.refresh(obj)
 
         return self.read_schema(**vars(obj))
+
+    def update(self, data: DBSchemaType) -> ReadSchemaType:
+        """
+        Create a obj with `data`.
+        """
+        ...
+
+    def delete(self, public_id: str) -> ReadSchemaType:
+        """
+        Delete a obj with public id `public_id`.
+        """
+        ...
