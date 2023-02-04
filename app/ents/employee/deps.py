@@ -3,17 +3,6 @@ from functools import wraps
 from app.core.security import security
 from app.ents.employee.crud import crud
 
-
-def authenticate(email, password):
-    """Authenticates an employee using `email` and `password`."""
-    employee = crud.read_by_email(employee_email=email)  # type: ignore
-    if not employee:
-        return None
-    
-    if security.verify_password(employee.hashed_password,password):
-        return employee
-
-
 def active_employee_required(f):
     """Checks if the user is an active employee (authorized)."""
 

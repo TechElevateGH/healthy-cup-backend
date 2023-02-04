@@ -4,9 +4,10 @@ from http import HTTPStatus
 from flask import Blueprint, request
 from pydantic import ValidationError
 from app.core.security import security
+from app.ents.base.deps import authenticate
 
 from app.ents.employee.crud import crud
-from app.ents.employee.deps import authenticate, active_employee_required
+from app.ents.employee.deps import  active_employee_required
 from app.ents.employee.models import Employee
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 
@@ -55,10 +56,12 @@ def get_employee(employee_id: str):
 def login_employee():
     """Log in an employee."""
     form = request.form
-    if not form or not form.get("email") or not form.get("password"):
+    email, password = form.get("email"), form.get("password")
+
+    if not form or not email or not password:
         return error_response(error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED)
 
-    employee = authenticate(form.get("email"),form.get("password"))
+    employee = authenticate(crud, email,password)
     if employee:
         return success_response(
             data=EmployeeRead(**employee.dict()), 
