@@ -1,6 +1,9 @@
+import json
 from flask import Blueprint
 
 bp = Blueprint("clients", __name__, url_prefix="/clients")
+
+from app.core.security import security
 
 @bp.post("/")
 def create_client():
