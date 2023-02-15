@@ -8,12 +8,15 @@ from app.ents.employee.schema import ClientCreateInput, ClientInDB
 
 class ClientCRUD(CRUDBase[Client, ClientInDB]):
     def __create_full_name(self, data: ClientCreateInput):
-        pass
+        """Returns the full name of the client"""
+        return data.first_name + " " + data.middle_name + " " + data.last_name
 
     def read_by_id(self, client_id: str) -> Optional[Client]:
+        """Read client with id `client_id`."""
         return super().read_by_id(client_id)
 
     def read_by_email(self, client_email: str) -> Optional[Client]:
+        """Read client with id `client_email`."""
         return Client.query.filter_by(email=client_email).first()
 
     def read_multi(self) -> list[Client]:
