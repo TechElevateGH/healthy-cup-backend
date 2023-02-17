@@ -7,6 +7,7 @@ from pydantic import ValidationError
 bp = Blueprint("clients", __name__, url_prefix="/clients")
 
 from app.core.security import security
+from app.ents.admin.deps import admin_required
 from app.ents.client.crud import crud as client_crud
 from app.ents.client.schema import (ClientCreateInput, ClientLoginInput, ClientReadClient)
 from app.utilities.reponses import (error_response, success_response,
@@ -36,9 +37,13 @@ def create_client():
 
 
 @bp.get("/")
+@admin_required
 def get_clients():
-    """Get all clients"""
-    return
+    clients = [
+        ClientReadClient(**vars(client))
+        for client in client_crud.read_multi()
+    ]
+    return success_response_multi(data=clients, code=HTTPStatus.OK)
 
 
 @bp.get("/<str:client_id>")
