@@ -47,9 +47,16 @@ def get_clients():
 
 
 @bp.get("/<str:client_id>")
-def get_client(client_id):
-    client = ...
-    return 
+def get_client(client_id: str):
+    """Returns client with id `client_id`."""
+    client = client_crud.read_by_id(client_id=client_id)
+    return (
+        success_response(
+            data=ClientReadClient.parse_obj(client), code=HTTPStatus.OK
+        )
+        if client
+        else error_response(error="Client does not exist.", code=HTTPStatus.NOT_FOUND)
+    )
 
 
 @bp.put("/<str:client_id>")
