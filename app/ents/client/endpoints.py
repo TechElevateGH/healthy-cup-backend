@@ -90,11 +90,12 @@ def employee_client_login():
             error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED
         )
 
+
 @bp.put("/<str:client_id>")
-def update_client(client_id):
+def update_client(client_id: str):
     return ""
 
 
 @bp.post("/<str:client_id>")
-def reset_password(client_id):
+def reset_password(client_id: str):
     return ""
