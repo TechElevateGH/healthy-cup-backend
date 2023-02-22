@@ -16,7 +16,7 @@ from app.utilities.utils import (
     error_response,
     success_response,
     success_response_multi,
-    validation_error_reponse,
+    validation_error_response,
 )
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
@@ -30,7 +30,7 @@ def create_employee():
         employee = crud.create(EmployeeCreateInput(**data))
         return success_response(data=employee, code=HTTPStatus.CREATED)
     except ValidationError as e:
-        return validation_error_reponse(error=e, code=HTTPStatus.BAD_REQUEST)
+        return validation_error_response(error=e, code=HTTPStatus.BAD_REQUEST)
 
 
 @bp.route("/", methods=["GET"])
@@ -43,7 +43,7 @@ def get_employees(_: Employee):
 
 @bp.route("/<string:employee_id>", methods=["GET"])
 def get_employee(employee_id: str):
-    """Get an employee."""
+    """Get employee with id `employee_id`."""
     employee = crud.read_by_id(employee_id=employee_id)
     return (
         success_response(data=employee, code=HTTPStatus.OK)

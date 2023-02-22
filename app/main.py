@@ -11,7 +11,7 @@ from app.ents.employee import employee_blueprint
 def init_db(app: Flask) -> None:
     """Initialize SQLite database and create tables for `app`."""
     app.config.from_mapping(
-        DATABASE=os.path.join(app.instance_path, "roselle.sqlite"),
+        DATABASE=os.path.join(app.instance_path, "healthycup.sqlite"),
         SQLALCHEMY_DATABASE_URI=config.get("SQLALCHEMY_DATABASE_URI"),
         SQLALCHEMY_TRACK_MODIFICATIONS=config.get("SQLALCHEMY_TRACK_MODIFICATIONS"),
         SQLALCHEMY_ECHO=config.get("SQLALCHEMY_ECHO"),

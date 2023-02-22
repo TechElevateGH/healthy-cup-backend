@@ -30,7 +30,7 @@ class EmployeeUpdate(EmployeeBase):
 
 
 class EmployeeReadDB(EmployeeBase):
-    """Schema for an employee that is read."""
+    """Schema for an employee that is read directly from DB."""
 
     id: int
     full_name: str
