@@ -1,14 +1,10 @@
 from typing import Optional
-import uuid
-from app.core.security import security
 
+from app.core.security import security
 from app.ents.base.crud import CRUDBase
 from app.ents.employee.models import Employee
-from app.ents.employee.schema import (
-    EmployeeInDB,
-    EmployeeCreateInput,
-    EmployeeRead,
-)
+from app.ents.employee.schema import (EmployeeCreateInput, EmployeeInDB,
+                                      EmployeeRead)
 
 
 class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeRead]):
@@ -31,13 +27,9 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeRead]):
 
     def create(self, data: EmployeeCreateInput) -> EmployeeRead:
         """Create an employee with `data`."""
-
         employee_obj = EmployeeInDB(
-            **{
-                "public_id": str(uuid.uuid4()),
-                "hashed_password": security.hash_password(data.password),
-                "full_name": self.__create_full_name(data),
-            },
+                full_name=self.__create_full_name(data),
+                hashed_password=security.hash_password(data.password),
             **data.dict(
                 exclude={"password"},
             )

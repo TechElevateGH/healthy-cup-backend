@@ -1,9 +1,9 @@
 import os
+
 from flask import Flask
 
 from app.core.config import config
 from app.core.security import security
-
 from app.ents.base.crud import db
 from app.ents.employee import employee_blueprint
 

@@ -1,15 +1,13 @@
 from datetime import datetime, timedelta
-import jwt
-from flask_bcrypt import Bcrypt  # pyright: ignore
 from http import HTTPStatus
-from flask import request
 
-from app.utilities.errors import (
-    InvalidTokenError,
-    MissingTokenError,
-)
-from app.utilities.utils import error_response
+import jwt
+from flask import request
+from flask_bcrypt import Bcrypt  # pyright: ignore
+
 from app.core.config import config
+from app.utilities.errors import InvalidTokenError, MissingTokenError
+from app.utilities.utils import error_response
 
 
 class Security:

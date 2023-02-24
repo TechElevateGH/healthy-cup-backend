@@ -1,9 +1,9 @@
 from typing import Generic, Optional, Type, TypeVar
-from pydantic import BaseModel
+
 from flask_sqlalchemy import SQLAlchemy
+from pydantic import BaseModel
 
-
-db: SQLAlchemy = SQLAlchemy()
+db = SQLAlchemy()
 
 
 ModelType = TypeVar("ModelType", bound=db.Model)  # type: ignore
@@ -26,15 +26,14 @@ class CRUDBase(Generic[ModelType, DBSchemaType, ReadSchemaType]):
         """
         Read object with id `obj_id`.
         """
-        obj = self.model.query.filter_by(public_id=obj_id).first()
+        obj = self.model.query.filter_by(id=obj_id).first()
         return self.read_schema(**vars(obj)) if obj else None
 
     def read_multi(self, limit: int = 100, skip: int = 0) -> list[ReadSchemaType]:
         """
         Read all objects.
         """
-        objs = [self.read_schema(**vars(obj)) for obj in self.model.query.all()]
-        return objs
+        return [self.read_schema(**vars(obj)) for obj in self.model.query.all()]
 
     def create(self, data: DBSchemaType) -> ReadSchemaType:
         """

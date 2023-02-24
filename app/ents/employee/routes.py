@@ -3,20 +3,15 @@ from http import HTTPStatus
 
 from flask import Blueprint, request
 from pydantic import ValidationError
+
 from app.core.security import security
-
 from app.ents.employee.crud import crud
-from app.ents.employee.deps import authenticate, active_employee_required
-from app.ents.employee.models import Employee
+from app.ents.employee.deps import deps
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
-
-from app.utilities.errors import MissingLoginCredentials, EmployeeDoesNotExist
-from app.utilities.utils import (
-    error_response,
-    success_response,
-    success_response_multi,
-    validation_error_response,
-)
+from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
+from app.utilities.utils import (error_response, success_response,
+                                 success_response_multi,
+                                 validation_error_response)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
@@ -27,14 +22,15 @@ def create_employee():
     try:
         data = json.loads(request.data)
         employee = crud.create(EmployeeCreateInput(**data))
+        if crud.read_by_email(employee.email):
+            return error_response(error="Employee with email already exists!", code=HTTPStatus.NOT_ACCEPTABLE)
         return success_response(data=employee, code=HTTPStatus.CREATED)
     except ValidationError as e:
         return validation_error_response(error=e, code=HTTPStatus.BAD_REQUEST)
 
 
 @bp.route("/", methods=["GET"])
-@active_employee_required
-def get_employees(_: Employee):
+def get_employees():
     """Get all employees."""
     employees = crud.read_multi()
     return success_response_multi(data=employees, code=HTTPStatus.OK)
@@ -58,7 +54,7 @@ def login_employee():
     if not form or not form.get("email") or not form.get("password"):
         return error_response(error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED)
 
-    employee = authenticate(form.get("email"),form.get("password"))
+    employee = deps.authenticate(form.get("email"),form.get("password"))
     if employee:
         return success_response(
             data=EmployeeRead(**employee.dict()), 
