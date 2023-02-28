@@ -25,15 +25,15 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeRead]):
         """Read all employees."""
         return super().read_multi()
 
-    def create(self, data: EmployeeCreateInput) -> EmployeeRead:
-        """Create an employee with `data`."""
+    def create(self, employee_in: EmployeeCreateInput) -> EmployeeRead:
+        """Create an employee with `employee_in`."""
+        employee_in.password = security.hash_password(employee_in.password)
+
         employee_obj = EmployeeInDB(
-                full_name=self.__create_full_name(data),
-                hashed_password=security.hash_password(data.password),
-            **data.dict(
-                exclude={"password"},
-            )
+                full_name=self.__create_full_name(employee_in),
+            **employee_in.dict()
         )
+
         return super().create(employee_obj)
 
 

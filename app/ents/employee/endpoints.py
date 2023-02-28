@@ -61,6 +61,6 @@ def login_employee():
             code=HTTPStatus.OK, 
             token=security.create_token(employee))
 
-    return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.OK)
+    return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
 
     

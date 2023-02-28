@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 import jwt
 from flask import request
-from flask_bcrypt import Bcrypt  # pyright: ignore
+from flask_bcrypt import Bcrypt  # type:ignore
 
 from app.core.config import config
 from app.utilities.errors import InvalidTokenError, MissingTokenError
@@ -15,9 +15,7 @@ class Security:
 
     def hash_password(self, password: str) -> str:
         """Returns the hashed form of `password`."""
-        return self.bcrypt.generate_password_hash(
-            password.encode("utf-8"),
-        )
+        return self.bcrypt.generate_password_hash(password.encode("utf-8"))  # type: ignore
 
     def verify_password(self, hashed_password: str, password: str) -> bool:
         """Returns `True` if `password` hashes to `hashed_password`."""

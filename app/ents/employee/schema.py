@@ -35,8 +35,7 @@ class EmployeeReadDB(EmployeeBase):
     full_name: str
 
 
-class EmployeeInDB(EmployeeBase):
+class EmployeeInDB(EmployeeCreateInput):
     """Database schema for adding an employee."""
 
     full_name: str = ""
-    hashed_password = ""

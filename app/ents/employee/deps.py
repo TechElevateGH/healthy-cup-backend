@@ -11,7 +11,7 @@ class EmployeeDeps:
         if not employee:
             return None
         
-        if security.verify_password(employee.hashed_password,password):
+        if security.verify_password(employee.password,password):
             return employee
 
 
