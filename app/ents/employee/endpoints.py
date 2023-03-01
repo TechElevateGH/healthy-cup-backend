@@ -6,7 +6,6 @@ from pydantic import ValidationError
 
 from app.core.security import security
 from app.ents.base.deps import authenticate
-
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
