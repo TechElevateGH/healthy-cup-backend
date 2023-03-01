@@ -1,6 +1,9 @@
 import uuid
-from app.ents.base.crud import db
+
 from sqlalchemy.dialects.postgresql import UUID
+
+from app.ents.base.crud import db
+
 
 class Employee(db.Model):  # type: ignore
     """Employees Table"""
