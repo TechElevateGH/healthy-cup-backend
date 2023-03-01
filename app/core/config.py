@@ -1,5 +1,6 @@
-from dotenv import dotenv_values, find_dotenv
 import secrets
+
+from dotenv import dotenv_values, find_dotenv
 
 
 class Config:

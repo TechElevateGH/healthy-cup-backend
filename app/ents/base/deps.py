@@ -10,7 +10,7 @@ def authenticate(crud: EmployeeCRUD, email: str, password: str):
     if not user:
         return None
 
-    if security.verify_password(user.hashed_password, password):
+    if security.verify_password(user.password, password):
         return user
 
 

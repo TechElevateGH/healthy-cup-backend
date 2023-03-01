@@ -1,15 +1,13 @@
 from datetime import datetime, timedelta
-import jwt
-from flask_bcrypt import Bcrypt  # pyright: ignore
 from http import HTTPStatus
-from flask import request
 
-from app.utilities.errors import (
-    InvalidTokenError,
-    MissingTokenError,
-)
-from app.utilities.utils import error_response
+import jwt
+from flask import request
+from flask_bcrypt import Bcrypt  # type:ignore
+
 from app.core.config import config
+from app.utilities.errors import InvalidTokenError, MissingTokenError
+from app.utilities.utils import error_response
 
 
 class Security:
@@ -17,19 +15,17 @@ class Security:
 
     def hash_password(self, password: str) -> str:
         """Returns the hashed form of `password`."""
-        return self.bcrypt.generate_password_hash(
-            password.encode("utf-8"),
-        )
+        return self.bcrypt.generate_password_hash(password.encode("utf-8"))  # type: ignore
 
     def verify_password(self, hashed_password: str, password: str) -> bool:
         """Returns `True` if `password` hashes to `hashed_password`."""
         return self.bcrypt.check_password_hash(hashed_password, password)
 
     def create_token(self, user):
-        """Creates a JWT token with the `public_id` of the `user`."""
+        """Creates a JWT token with the `id` of the `user`."""
         token = jwt.encode(
             payload={
-                "public_id": user.public_id,
+                "subject": user.id,
                 "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
             },
             key=config["SECRET_KEY"],  # type: ignore

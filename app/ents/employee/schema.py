@@ -19,7 +19,6 @@ class EmployeeCreateInput(EmployeeBase):
 class EmployeeRead(EmployeeBase):
     """Schema for an employee that is read."""
 
-    public_id: str
     full_name: str
 
 
@@ -34,11 +33,10 @@ class EmployeeReadDB(EmployeeBase):
 
     id: int
     full_name: str
+    password: str
 
 
-class EmployeeInDB(EmployeeBase):
+class EmployeeInDB(EmployeeCreateInput):
     """Database schema for adding an employee."""
 
-    public_id: str = ""
     full_name: str = ""
-    hashed_password = ""
