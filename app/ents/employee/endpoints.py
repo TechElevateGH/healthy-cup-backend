@@ -1,12 +1,13 @@
 import json
 from http import HTTPStatus
 
-from flask import Blueprint, request, Response
+from flask import Blueprint, request
 from pydantic import ValidationError
 
 from app.core.security import security
+from app.ents.base.deps import authenticate
+
 from app.ents.employee.crud import crud
-from app.ents.employee.deps import deps
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
 from app.utilities.utils import (error_response, success_response,
@@ -21,10 +22,10 @@ def create_employee():
     """Create an employee."""
     try:
         data = json.loads(request.data)
-        employee = crud.create(EmployeeCreateInput(**data))
+        employee = EmployeeCreateInput(**data)
         if crud.read_by_email(employee.email):
             return error_response(error="Employee with email already exists!", code=HTTPStatus.NOT_ACCEPTABLE)
-        return success_response(data=employee, code=HTTPStatus.CREATED)
+        return success_response(data=crud.create(employee), code=HTTPStatus.CREATED)
     except ValidationError as e:
         return validation_error_response(error=e, code=HTTPStatus.BAD_REQUEST)
 
@@ -51,10 +52,12 @@ def get_employee(employee_id: str):
 def login_employee():
     """Log in an employee."""
     form = request.form
-    if not form or not form.get("email") or not form.get("password"):
+    email, password = form.get("email"), form.get("password")
+
+    if not form or not email or not password:
         return error_response(error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED)
-    
-    employee = deps.authenticate(form.get("email"),form.get("password"))
+
+    employee = authenticate(crud, email,password)
     if employee:
         return success_response(
             data=EmployeeRead(**employee.dict()), 
