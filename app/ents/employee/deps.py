@@ -25,7 +25,7 @@ class EmployeeDeps:
                 return  token
 
             #TODO:
-            employee = crud.read_by_email(token.get("public_id")) #type: ignore
+            employee = crud.read_by_email(token.get("subject")) #type: ignore
             return f(employee, *args, **kwargs)
 
         return decorated

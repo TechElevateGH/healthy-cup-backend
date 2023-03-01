@@ -53,8 +53,8 @@ class CRUDBase(Generic[ModelType, DBSchemaType, ReadSchemaType]):
         """
         ...
 
-    def delete(self, public_id: str) -> ReadSchemaType:
+    def delete(self, id: str) -> ReadSchemaType:
         """
-        Delete a obj with public id `public_id`.
+        Delete a obj with  id `id`.
         """
         ...

@@ -22,10 +22,10 @@ class Security:
         return self.bcrypt.check_password_hash(hashed_password, password)
 
     def create_token(self, user):
-        """Creates a JWT token with the `public_id` of the `user`."""
+        """Creates a JWT token with the `id` of the `user`."""
         token = jwt.encode(
             payload={
-                "public_id": user.public_id,
+                "subject": user.id,
                 "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
             },
             key=config["SECRET_KEY"],  # type: ignore

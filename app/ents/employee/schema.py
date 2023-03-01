@@ -33,6 +33,7 @@ class EmployeeReadDB(EmployeeBase):
 
     id: int
     full_name: str
+    password: str
 
 
 class EmployeeInDB(EmployeeCreateInput):

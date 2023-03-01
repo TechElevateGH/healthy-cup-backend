@@ -1,7 +1,7 @@
 import json
 from http import HTTPStatus
 
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
 from pydantic import ValidationError
 
 from app.core.security import security
@@ -32,7 +32,7 @@ def create_employee():
 @bp.route("/", methods=["GET"])
 def get_employees():
     """Get all employees."""
-    employees = crud.read_multi()
+    employees = [EmployeeRead(**employee.dict())  for employee in crud.read_multi()]
     return success_response_multi(data=employees, code=HTTPStatus.OK)
 
 
@@ -41,7 +41,7 @@ def get_employee(employee_id: str):
     """Get employee with id `employee_id`."""
     employee = crud.read_by_id(employee_id=employee_id)
     return (
-        success_response(data=employee, code=HTTPStatus.OK)
+        success_response(data=EmployeeRead(**employee.dict()), code=HTTPStatus.OK)
         if employee
         else error_response(error="Employee does not exist.", code=HTTPStatus.NOT_FOUND)
     )
@@ -53,7 +53,7 @@ def login_employee():
     form = request.form
     if not form or not form.get("email") or not form.get("password"):
         return error_response(error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED)
-
+    
     employee = deps.authenticate(form.get("email"),form.get("password"))
     if employee:
         return success_response(
