@@ -4,7 +4,7 @@ from flask import Flask
 
 from app.core.config import config
 from app.core.security import security
-from app.ents.base.crud import db
+from app.ents.base.crud import db, migrate
 from app.ents.employee import employee_blueprint
 
 
@@ -33,6 +33,7 @@ def create_app() -> Flask:
     security.bcrypt.init_app(app)
     init_db(app)
     register_blueprints(app)
+    migrate.init_app(app, db)
     return app
 
 
