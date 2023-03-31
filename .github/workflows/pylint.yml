@@ -19,7 +19,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         pip install poetry
-        poetry install
+        cd app && poetry install
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
