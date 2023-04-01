@@ -18,7 +18,6 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeReadDB]):
     def read_by_email(self, employee_email: str) -> Optional[EmployeeReadDB]:
         """Read employee with email `employee_email`."""
         employee = Employee.query.filter_by(email=employee_email).first()
-        print(employee)
         return EmployeeReadDB(**vars(employee)) if employee else None
 
     def read_multi(self) -> list[EmployeeReadDB]:

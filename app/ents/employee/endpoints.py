@@ -9,9 +9,12 @@ from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
-from app.utilities.utils import (error_response, success_response,
-                                 success_response_multi,
-                                 validation_error_response)
+from app.utilities.utils import (
+    error_response,
+    success_response,
+    success_response_multi,
+    validation_error_response,
+)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
@@ -23,7 +26,10 @@ def create_employee():
         data = json.loads(request.data)
         employee = EmployeeCreateInput(**data)
         if crud.read_by_email(employee.email):
-            return error_response(error="Employee with email already exists!", code=HTTPStatus.NOT_ACCEPTABLE)
+            return error_response(
+                error="Employee with email already exists!",
+                code=HTTPStatus.NOT_ACCEPTABLE,
+            )
         return success_response(data=crud.create(employee), code=HTTPStatus.CREATED)
     except ValidationError as e:
         return validation_error_response(error=e, code=HTTPStatus.BAD_REQUEST)
@@ -32,7 +38,7 @@ def create_employee():
 @bp.route("/", methods=["GET"])
 def get_employees():
     """Get all employees."""
-    employees = [EmployeeRead(**employee.dict())  for employee in crud.read_multi()]
+    employees = [EmployeeRead(**employee.dict()) for employee in crud.read_multi()]
     return success_response_multi(data=employees, code=HTTPStatus.OK)
 
 
@@ -54,15 +60,16 @@ def login_employee():
     email, password = form.get("email"), form.get("password")
 
     if not form or not email or not password:
-        return error_response(error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED)
+        return error_response(
+            error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED
+        )
 
-    employee = authenticate(crud, email,password)
+    employee = authenticate(crud, email, password)
     if employee:
         return success_response(
-            data=EmployeeRead(**employee.dict()), 
-            code=HTTPStatus.OK, 
-            token=security.create_token(employee))
+            data=EmployeeRead(**employee.dict()),
+            code=HTTPStatus.OK,
+            token=security.create_token(employee),
+        )
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
-
-    
