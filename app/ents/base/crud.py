@@ -2,8 +2,10 @@ from typing import Generic, Optional, Type, TypeVar
 
 from flask_sqlalchemy import SQLAlchemy
 from pydantic import BaseModel
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 
 ModelType = TypeVar("ModelType", bound=db.Model)  # type: ignore
