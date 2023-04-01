@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
 import jwt
@@ -8,6 +8,7 @@ from flask_bcrypt import Bcrypt  # type:ignore
 from app.core.config import config
 from app.utilities.errors import InvalidTokenError, MissingTokenError
 from app.utilities.utils import error_response
+
 
 
 class Security:
@@ -26,6 +27,19 @@ class Security:
         token = jwt.encode(
             payload={
                 "subject": user.id,
+                "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
+            },
+            key=config["SECRET_KEY"],  # type: ignore
+            algorithm="HS256",
+        )
+
+        return token
+    
+    def create_token_with_id(self, userId):
+        """Creates a JWT token with the `id` of the `user`."""
+        token = jwt.encode(
+            payload={
+                "subject": userId,
                 "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
             },
             key=config["SECRET_KEY"],  # type: ignore
@@ -54,6 +68,14 @@ class Security:
             return error_response(
                 error=InvalidTokenError.msg, code=HTTPStatus.UNAUTHORIZED
             )
+        
+        
+    
+    
+    
+
+    
+
 
 
 security = Security()
