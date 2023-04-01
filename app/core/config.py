@@ -53,8 +53,9 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: str = "sqlite:///healthy_cup.db"
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:///healthycup.db"
     # SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = "sqlite:///healthy_cup.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
 
     # @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     # def assemble_db_connection(cls, v: Optional[str], values: dict[str, Any]) -> Any:

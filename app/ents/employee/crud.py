@@ -3,8 +3,7 @@ from typing import Optional
 from app.core.security import security
 from app.ents.base.crud import CRUDBase
 from app.ents.employee.models import Employee
-from app.ents.employee.schema import (EmployeeCreateInput, EmployeeInDB,
-                                      EmployeeReadDB)
+from app.ents.employee.schema import EmployeeCreateInput, EmployeeInDB, EmployeeReadDB
 
 
 class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeReadDB]):
@@ -19,7 +18,8 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeReadDB]):
     def read_by_email(self, employee_email: str) -> Optional[EmployeeReadDB]:
         """Read employee with email `employee_email`."""
         employee = Employee.query.filter_by(email=employee_email).first()
-        return EmployeeReadDB(**vars(employee))
+        print(employee)
+        return EmployeeReadDB(**vars(employee)) if employee else None
 
     def read_multi(self) -> list[EmployeeReadDB]:
         """Read all employees."""
@@ -30,8 +30,7 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeReadDB]):
         employee_in.password = security.hash_password(employee_in.password)
 
         employee_obj = EmployeeInDB(
-            full_name=self.__create_full_name(employee_in),
-            **employee_in.dict()
+            full_name=self.__create_full_name(employee_in), **employee_in.dict()
         )
 
         return super().create(employee_obj)

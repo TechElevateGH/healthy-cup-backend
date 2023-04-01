@@ -5,7 +5,7 @@ import jwt
 from flask import request
 from flask_bcrypt import Bcrypt  # type:ignore
 
-from app.core.config import config
+from app.core.config import settings
 from app.utilities.errors import InvalidTokenError, MissingTokenError
 from app.utilities.utils import error_response
 
@@ -28,7 +28,7 @@ class Security:
                 "subject": user.id,
                 "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
             },
-            key=config["SECRET_KEY"],  # type: ignore
+            key=settings.SECRET_KEY,  # type: ignore
             algorithm="HS256",
         )
 
@@ -45,7 +45,7 @@ class Security:
             )
 
         try:
-            key = config.get("SECRET_KEY")
+            key = settings.SECRET_KEY
             decoded_token = jwt.decode(
                 token, key=key if key else "", algorithms=["HS256"]
             )
