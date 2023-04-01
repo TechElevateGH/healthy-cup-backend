@@ -10,16 +10,6 @@ from pydantic import (
 from typing import Any, Optional, Union
 import secrets
 
-# from dotenv import dotenv_values, find_dotenv
-
-
-# class Config:
-#     config = dotenv_values(find_dotenv())
-#     config["SECRET_KEY"] = secrets.token_urlsafe()
-
-
-# config = Config().config
-
 
 class Settings(BaseSettings):
     API_STR: str = "/jfarms"

@@ -5,7 +5,7 @@ import jwt
 from flask import request
 from flask_bcrypt import Bcrypt  # type:ignore
 
-from app.core.config import settings
+from app.core.settings import settings
 from app.utilities.errors import InvalidTokenError, MissingTokenError
 from app.utilities.utils import error_response
 

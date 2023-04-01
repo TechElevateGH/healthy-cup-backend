@@ -2,7 +2,7 @@ import os
 
 from flask import Flask
 
-from app.core.config import settings
+from app.core.settings import settings
 from app.core.security import security
 from app.ents.base.crud import db, migrate
 from app.ents.employee import employee_blueprint
@@ -13,7 +13,7 @@ def init_db(app: Flask) -> None:
     app.config.from_mapping(
         DATABASE=os.path.join(app.instance_path, "healthycup.sqlite"),
         SQLALCHEMY_DATABASE_URI=settings.SQLALCHEMY_DATABASE_URI,
-        # SQLALCHEMY_TRACK_MODIFICATIONS=settings.SQLALCHEMY_TRACK_MODIFICATIONS,
+        SQLALCHEMY_TRACK_MODIFICATIONS=settings.SQLALCHEMY_TRACK_MODIFICATIONS,
         # SQLALCHEMY_ECHO=settings.get("SQLALCHEMY_ECHO"),
     )
 
