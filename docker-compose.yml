@@ -1,20 +1,19 @@
-version: '3'
+version: "3.9"
 
 services:
-  db:
-    image: postgres
-    environment:
-      POSTGRES_USER: healthycup
-      POSTGRES_PASSWORD: hcdb
-      POSTGRES_DB: healthycup
-    ports:
-      - "5432:5432"
-
   app:
     build: .
     ports:
       - "5001:5000"
-    environment:
-      DATABASE_URL: postgresql://healthycup:mypassword@db:5432/healthycup
     depends_on:
       - db
+    environment:
+      DATABASE_URL: postgres://healthycup:hcapi@db:5432/healthycup
+      FLASK_ENV: development
+      FLASK_APP: app/main.py
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: healthycup
+      POSTGRES_PASSWORD: hcapi
+      POSTGRES_DB: healthycup

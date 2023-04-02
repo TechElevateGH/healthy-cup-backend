@@ -4,19 +4,22 @@ FROM python:3.10-slim-buster
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
-# COPY ./app /app
+# Copy the requirements file into the container at /app
+COPY requirements.txt .
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the rest of the application code into the container at /app
+COPY . /app
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5001
+# Expose port 5000 for the Flask app
+EXPOSE 5000
 
-# Define environment variable
-ENV NAME HealthyCup
+# Set environment variables
+ENV FLASK_APP=/app/app/main.py
+ENV FLASK_ENV=development
+ENV DATABASE_URL=postgres://healthycup:password@postgres:5432/healthycup
 
-# Run app.py when the container launches
-CMD ["flask", "run"]
+# Run the command to start the Flask app
+CMD ["flask", "run", "--host=0.0.0.0"]
