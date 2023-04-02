@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: healthycup
+      POSTGRES_PASSWORD: hcdb
+      POSTGRES_DB: healthycup
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    ports:
+      - "5001:5000"
+    environment:
+      DATABASE_URL: postgresql://healthycup:mypassword@db:5432/healthycup
+    depends_on:
+      - db
