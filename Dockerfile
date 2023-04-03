@@ -16,10 +16,5 @@ COPY . /app
 # Expose port 5000 for the Flask app
 EXPOSE 5000
 
-# Set environment variables
-ENV FLASK_APP=/app/app/main.py
-ENV FLASK_ENV=development
-ENV DATABASE_URL=postgres://healthycup:password@postgres:5432/healthycup
-
 # Run the command to start the Flask app
 CMD ["flask", "run", "--host=0.0.0.0"]

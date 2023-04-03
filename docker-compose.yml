@@ -7,13 +7,12 @@ services:
       - "5001:5000"
     depends_on:
       - db
-    environment:
-      DATABASE_URL: postgres://healthycup:hcapi@db:5432/healthycup
-      FLASK_ENV: development
-      FLASK_APP: app/main.py
+    env_file:
+      - .env 
+      - .flaskenv
+    
   db:
     image: postgres:13-alpine
-    environment:
-      POSTGRES_USER: healthycup
-      POSTGRES_PASSWORD: hcapi
-      POSTGRES_DB: healthycup
+    env_file:
+      - .env
+    
