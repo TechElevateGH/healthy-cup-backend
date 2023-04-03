@@ -1,7 +1,9 @@
 import json
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
 from flask import Blueprint, request
+from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies
 from pydantic import ValidationError
 
 from app.core.security import security
@@ -73,3 +75,22 @@ def login_employee():
         )
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
+
+
+@bp.after_request
+# @jwt_required
+def refresh_expiring_jwts(success_response):
+    try:
+        employee_id = str(get_jwt_identity())
+        if employee_id:
+            exp_timestamp = get_jwt()["exp"]
+            now = datetime.now(timezone.utc)
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+            if target_timestamp >= exp_timestamp:
+                token = security.create_token_with_id(employee_id)
+                set_access_cookies(success_response, token)
+        return success_response
+
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original response
+        return success_response

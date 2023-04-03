@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
 import jwt
@@ -33,6 +33,19 @@ class Security:
         )
 
         return token
+    
+    def create_token_with_id(self, userId):
+        """Creates a JWT token with the `id` of the `user`."""
+        token = jwt.encode(
+            payload={
+                "subject": userId,
+                "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
+            },
+            key=config["SECRET_KEY"],  # type: ignore
+            algorithm="HS256",
+        )
+
+        return token
 
     def verify_token(self):
         """Returns the decoded token in the request header (if valid)."""
@@ -54,6 +67,14 @@ class Security:
             return error_response(
                 error=InvalidTokenError.msg, code=HTTPStatus.UNAUTHORIZED
             )
+        
+        
+    
+    
+    
+
+    
+
 
 
 security = Security()
