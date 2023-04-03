@@ -10,3 +10,6 @@ install:
 
 sort:
 	isort .
+
+docker:
+	docker compose up

@@ -10,12 +10,8 @@ from app.ents.employee import employee_blueprint
 
 def init_db(app: Flask) -> None:
     """Initialize SQLite database and create tables for `app`."""
-    app.config.from_mapping(
-        DATABASE=os.path.join(app.instance_path, "healthycup.sqlite"),
-        SQLALCHEMY_DATABASE_URI=settings.SQLALCHEMY_DATABASE_URI,
-        SQLALCHEMY_TRACK_MODIFICATIONS=settings.SQLALCHEMY_TRACK_MODIFICATIONS,
-        # SQLALCHEMY_ECHO=settings.get("SQLALCHEMY_ECHO"),
-    )
+    print(settings.SQLALCHEMY_DATABASE_URI)
+    app.config["SQLALCHEMY_DATABASE_URI"] = settings.SQLALCHEMY_DATABASE_URI
 
     db.init_app(app)
 
