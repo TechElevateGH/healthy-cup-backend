@@ -1,9 +1,9 @@
 import json
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
-from datetime import datetime, timedelta, timezone
-
 from flask import Blueprint, request
+from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies
 from pydantic import ValidationError
 
 from app.core.security import security
@@ -17,21 +17,6 @@ from app.utilities.utils import (
     success_response_multi,
     validation_error_response,
 )
-
-
-from flask_jwt_extended import get_jwt
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import set_access_cookies
-
-
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
-from flask_jwt_extended import set_access_cookies
-from flask_jwt_extended import unset_jwt_cookies
-
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 

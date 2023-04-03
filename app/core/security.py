@@ -10,7 +10,6 @@ from app.utilities.errors import InvalidTokenError, MissingTokenError
 from app.utilities.utils import error_response
 
 
-
 class Security:
     bcrypt = Bcrypt()
 
