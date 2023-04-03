@@ -2,23 +2,20 @@ import os
 
 from flask import Flask
 
-from app.core.config import config
+from app.core.settings import settings
 from app.core.security import security
-from app.ents.base.crud import db
+from app.ents.base.crud import db, migrate
 from app.ents.employee import employee_blueprint
 
 
 def init_db(app: Flask) -> None:
     """Initialize SQLite database and create tables for `app`."""
-    app.config.from_mapping(
-        DATABASE=os.path.join(app.instance_path, "healthycup.sqlite"),
-        SQLALCHEMY_DATABASE_URI=config.get("SQLALCHEMY_DATABASE_URI"),
-        SQLALCHEMY_TRACK_MODIFICATIONS=config.get("SQLALCHEMY_TRACK_MODIFICATIONS"),
-        SQLALCHEMY_ECHO=config.get("SQLALCHEMY_ECHO"),
-    )
+    print(settings.SQLALCHEMY_DATABASE_URI)
+    app.config["SQLALCHEMY_DATABASE_URI"] = settings.SQLALCHEMY_DATABASE_URI
 
     db.init_app(app)
 
+    # *  Will later create tables with Alembic
     with app.app_context():
         db.create_all()
 
@@ -33,6 +30,7 @@ def create_app() -> Flask:
     security.bcrypt.init_app(app)
     init_db(app)
     register_blueprints(app)
+    migrate.init_app(app, db)
     return app
 
 
