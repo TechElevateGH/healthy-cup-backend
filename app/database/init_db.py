@@ -1,9 +1,9 @@
-from app.ents.employee.models import Employee
 from sqlalchemy.orm import Session
 
 from app.core.settings import settings
 from app.database.base import Base
 from app.database.session import engine
+from app.ents.employee.models import Employee
 
 
 def init_db(db: Session) -> None:

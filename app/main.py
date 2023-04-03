@@ -1,9 +1,7 @@
-import os
-
 from flask import Flask
 
-from app.core.settings import settings
 from app.core.security import security
+from app.core.settings import settings
 from app.ents.base.crud import db, migrate
 from app.ents.employee import employee_blueprint
 

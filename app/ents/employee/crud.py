@@ -3,7 +3,8 @@ from typing import Optional
 from app.core.security import security
 from app.ents.base.crud import CRUDBase
 from app.ents.employee.models import Employee
-from app.ents.employee.schema import EmployeeCreateInput, EmployeeInDB, EmployeeReadDB
+from app.ents.employee.schema import (EmployeeCreateInput, EmployeeInDB,
+                                      EmployeeReadDB)
 
 
 class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeReadDB]):
