@@ -11,12 +11,9 @@ from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
-from app.utilities.utils import (
-    error_response,
-    success_response,
-    success_response_multi,
-    validation_error_response,
-)
+from app.utilities.utils import (error_response, success_response,
+                                 success_response_multi,
+                                 validation_error_response)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
