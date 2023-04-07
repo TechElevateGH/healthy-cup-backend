@@ -31,7 +31,7 @@ class Security:
                 "sub": user.id,
                 "exp": (datetime.utcnow() + timedelta(minutes=2)).timestamp(),
             },
-            key=settings.SECRET_KEY,  # type: ignore
+            key=settings.JWT_SECRET_KEY,  # type: ignore
             algorithm="HS256",
         )
 
@@ -44,7 +44,7 @@ class Security:
                 "sub": userId,
                 "exp": (datetime.utcnow() + timedelta(minutes=2)).timestamp(),
             },
-            key=settings.SECRET_KEY,  # type: ignore
+            key=settings.JWT_SECRET_KEY,  # type: ignore
             algorithm="HS256",
         )
 

@@ -6,6 +6,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies
 from pydantic import ValidationError
 from flask_jwt_extended import jwt_required
+from app.core.settings import settings
 
 from app.core.security import security
 from app.ents.base.deps import authenticate
@@ -83,7 +84,7 @@ def refresh_expiring_jwts(success_response):
         if employee_id:
             exp_timestamp = get_jwt()["exp"]
             now = datetime.now(timezone.utc)
-            target_timestamp = datetime.timestamp(now + timedelta(minutes=2))
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
             if target_timestamp >= exp_timestamp:
                 token = security.create_token_with_id(employee_id)
                 set_access_cookies(success_response, token)

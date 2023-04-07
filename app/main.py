@@ -25,7 +25,7 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(employee_blueprint)
 
 def configure_jwt(app: Flask) -> None:
-    app.config['JWT_SECRET_KEY'] = settings.SECRET_KEY
+    app.config['JWT_SECRET_KEY'] = settings.JWT_SECRET_KEY
     JWTManager(app)
 
 

@@ -1,5 +1,4 @@
 from pydantic import ValidationError
-from flask import jsonify
 
 def success_response(*, data, code, token=""):
     return {"data": data.dict()}, code, {"Authorization": token}
