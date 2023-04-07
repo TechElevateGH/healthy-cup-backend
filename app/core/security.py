@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
+from flask import jsonify
 
 import jwt
 from flask import request
@@ -8,6 +9,8 @@ from flask_bcrypt import Bcrypt  # type:ignore
 from app.core.settings import settings
 from app.utilities.errors import InvalidTokenError, MissingTokenError
 from app.utilities.utils import error_response
+
+from flask_jwt_extended import create_access_token
 
 
 class Security:
@@ -25,10 +28,10 @@ class Security:
         """Creates a JWT token with the `id` of the `user`."""
         token = jwt.encode(
             payload={
-                "subject": user.id,
-                "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
+                "sub": user.id,
+                "exp": (datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp(),
             },
-            key=settings.SECRET_KEY,  # type: ignore
+            key=settings.JWT_SECRET_KEY,  # type: ignore
             algorithm="HS256",
         )
 
@@ -38,10 +41,10 @@ class Security:
         """Creates a JWT token with the `id` of the `user`."""
         token = jwt.encode(
             payload={
-                "subject": userId,
-                "expire_at": (datetime.utcnow() + timedelta(minutes=30)).ctime(),
+                "sub": userId,
+                "exp": (datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp(),
             },
-            key=config["SECRET_KEY"],  # type: ignore
+            key=settings.JWT_SECRET_KEY,  # type: ignore
             algorithm="HS256",
         )
 
@@ -67,6 +70,17 @@ class Security:
             return error_response(
                 error=InvalidTokenError.msg, code=HTTPStatus.UNAUTHORIZED
             )
+        
+
+    def refresh_token(self, exp_timestamp, employee_id):
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        if target_timestamp >= exp_timestamp:
+            token = security.create_token_with_id(employee_id)
+            return token
+        
+        return ""
+            
         
         
     
