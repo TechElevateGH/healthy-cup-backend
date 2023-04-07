@@ -29,7 +29,7 @@ class Security:
         token = jwt.encode(
             payload={
                 "sub": user.id,
-                "exp": (datetime.utcnow() + timedelta(minutes=2)).timestamp(),
+                "exp": (datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp(),
             },
             key=settings.JWT_SECRET_KEY,  # type: ignore
             algorithm="HS256",
@@ -42,7 +42,7 @@ class Security:
         token = jwt.encode(
             payload={
                 "sub": userId,
-                "exp": (datetime.utcnow() + timedelta(minutes=2)).timestamp(),
+                "exp": (datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp(),
             },
             key=settings.JWT_SECRET_KEY,  # type: ignore
             algorithm="HS256",
@@ -73,13 +73,14 @@ class Security:
         
 
     def refresh_token(self, exp_timestamp, employee_id):
-            now = datetime.now(timezone.utc)
-            target_timestamp = datetime.timestamp(now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-            if target_timestamp >= exp_timestamp:
-                token = security.create_token_with_id(employee_id)
-                return token
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        if target_timestamp >= exp_timestamp:
+            token = security.create_token_with_id(employee_id)
+            return token
+        
+        return ""
             
-            return ""
         
         
     
