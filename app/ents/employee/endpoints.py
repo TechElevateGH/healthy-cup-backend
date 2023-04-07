@@ -82,12 +82,9 @@ def refresh_expiring_jwts(success_response):
     try:
         employee_id = str(get_jwt_identity())
         if employee_id:
-            exp_timestamp = get_jwt()["exp"]
-            now = datetime.now(timezone.utc)
-            target_timestamp = datetime.timestamp(now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-            if target_timestamp >= exp_timestamp:
-                token = security.create_token_with_id(employee_id)
-                set_access_cookies(success_response, token)
+            expiresIn = get_jwt()["exp"]
+            new_access_token = security.refresh_token(expiresIn, employee_id)
+            set_access_cookies(success_response, new_access_token )
         return success_response
 
     except (RuntimeError, KeyError):
