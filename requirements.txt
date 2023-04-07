@@ -22,3 +22,4 @@ zipp==3.11.0
 PyJWT
 flask_migrate
 psycopg2-binary
+flask_jwt_extended
