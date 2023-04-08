@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     API_STR: str = "/jfarms"
     SECRET_KEY: str
     JWT_SECRET_KEY: str
+    REFRESH_TOKEN_COOKIE_KEY_NAME: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int  # 60 * 24 * 8  # 8 days
     REFRESH_TOKEN_EXPIRE_MINUTES: int
     SERVER_NAME: str = "localhost"

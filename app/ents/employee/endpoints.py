@@ -1,16 +1,22 @@
 import json
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
-from flask import Blueprint, request
+from flask import (
+    Blueprint, 
+    request, 
+    make_response
+)
 from flask_jwt_extended import (
     get_jwt,
     get_jwt_identity,
     jwt_required,
-    set_access_cookies,
+    decode_token
 )
 from pydantic import ValidationError
 
 from app.core.security import security
+from app.core.settings import settings
 from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
@@ -77,25 +83,49 @@ def login_employee():
 
     employee = authenticate(crud, email, password)
     if employee:
-        return success_response(
+        access_token = security.create_token(employee.id)
+        refresh_token = security.create_refresh_token(employee.id)
+
+        resp= success_response(
             data=EmployeeRead(**employee.dict()),
             code=HTTPStatus.OK,
-            token=security.create_token(employee.id),
+            token=access_token,
         )
+        response = make_response(resp)
+
+        response.set_cookie(
+            settings.REFRESH_TOKEN_COOKIE_KEY_NAME, 
+            refresh_token, 
+            expires=datetime.timestamp(
+            datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)),
+            httponly=True
+        )
+
+        return response
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
 
 
 @bp.after_request
-def refresh_expiring_jwts(success_response):
+def refresh_expiring_jwts(response):
     try:
+        refresh_token = request.cookies.get(settings.REFRESH_TOKEN_COOKIE_KEY_NAME)
         employee_id = str(get_jwt_identity())
-        if employee_id:
-            expiresIn = get_jwt()["exp"]
-            new_access_token = security.refresh_token(expiresIn, employee_id)
-            set_access_cookies(success_response, new_access_token)
-        return success_response
 
+        if refresh_token and employee_id:
+            decoded_refresh_token = decode_token(refresh_token)
+            expiration_of_refresh_token = decoded_refresh_token["exp"]
+            expiration_of_access_token = get_jwt()["exp"]
+
+            new_access_token = security.refresh_access_token(expiration_of_access_token, expiration_of_refresh_token, employee_id)
+            if new_access_token:
+                response.headers["Authorization"] = new_access_token
+
+        return response
+               
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original response
-        return success_response
+        return response
+
+
+

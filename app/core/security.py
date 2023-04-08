@@ -36,6 +36,23 @@ class Security:
         )
 
         return token
+    
+
+    def create_refresh_token(self, user_id):
+        """Creates a refresh JWT token with the `id` of the `user`."""
+        token = jwt.encode(
+            payload={
+                "sub": user_id,
+                "exp": (
+                    datetime.utcnow()
+                    + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+                ).timestamp(),
+            },
+            key=settings.JWT_SECRET_KEY,  # type: ignore
+            algorithm="HS256",
+        )
+
+        return token
 
     def verify_token(self):
         """Returns the decoded token in the request header (if valid)."""
@@ -58,14 +75,18 @@ class Security:
                 error=InvalidTokenError.msg, code=HTTPStatus.UNAUTHORIZED
             )
 
-    def refresh_token(self, exp_timestamp, employee_id):
+    def refresh_access_token(self, exp_access_token, exp_refresh_token, employee_id):
         now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(
-            now + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+        target_timestamp_access_token = datetime.timestamp(
+            now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         )
-        if target_timestamp >= exp_timestamp:
+        if target_timestamp_access_token > exp_access_token and datetime.timestamp(now) < exp_refresh_token:
             token = security.create_token(employee_id)
             return token
+        
+        return 
 
 
 security = Security()
+
+
