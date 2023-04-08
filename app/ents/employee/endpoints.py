@@ -14,7 +14,11 @@ from app.core.security import security
 from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
-from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
+from app.utilities.errors import (
+    EmployeeDoesNotExist,
+    InvalidTokenError,
+    MissingLoginCredentials,
+)
 from app.utilities.reponses import (
     error_response,
     success_response,
@@ -76,7 +80,7 @@ def login_employee():
         return success_response(
             data=EmployeeRead(**employee.dict()),
             code=HTTPStatus.OK,
-            token=security.create_token(employee),
+            token=security.create_token(employee.id),
         )
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)

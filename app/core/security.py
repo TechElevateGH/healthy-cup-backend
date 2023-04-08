@@ -21,27 +21,11 @@ class Security:
         """Returns `True` if `password` hashes to `hashed_password`."""
         return self.bcrypt.check_password_hash(hashed_password, password)
 
-    def create_token(self, user):
+    def create_token(self, user_id):
         """Creates a JWT token with the `id` of the `user`."""
         token = jwt.encode(
             payload={
-                "sub": user.id,
-                "exp": (
-                    datetime.utcnow()
-                    + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-                ).timestamp(),
-            },
-            key=settings.JWT_SECRET_KEY,  # type: ignore
-            algorithm="HS256",
-        )
-
-        return token
-
-    def create_token_with_id(self, userId):
-        """Creates a JWT token with the `id` of the `user`."""
-        token = jwt.encode(
-            payload={
-                "sub": userId,
+                "sub": user_id,
                 "exp": (
                     datetime.utcnow()
                     + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -77,13 +61,11 @@ class Security:
     def refresh_token(self, exp_timestamp, employee_id):
         now = datetime.now(timezone.utc)
         target_timestamp = datetime.timestamp(
-            now + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            now + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
         )
         if target_timestamp >= exp_timestamp:
-            token = security.create_token_with_id(employee_id)
+            token = security.create_token(employee_id)
             return token
-
-        return ""
 
 
 security = Security()
