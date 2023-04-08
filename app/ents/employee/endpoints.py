@@ -1,21 +1,26 @@
 import json
-from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
 from flask import Blueprint, request
-from flask_jwt_extended import get_jwt, get_jwt_identity, set_access_cookies
+from flask_jwt_extended import (
+    get_jwt,
+    get_jwt_identity,
+    jwt_required,
+    set_access_cookies,
+)
 from pydantic import ValidationError
-from flask_jwt_extended import jwt_required
-from app.core.settings import settings
 
 from app.core.security import security
 from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
-from app.utilities.utils import (error_response, success_response,
-                                 success_response_multi,
-                                 validation_error_response)
+from app.utilities.reponses import (
+    error_response,
+    success_response,
+    success_response_multi,
+    validation_error_response,
+)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
@@ -61,7 +66,7 @@ def login_employee():
     form = request.form
     email, password = form.get("email"), form.get("password")
 
-    if not form or not email or not password:
+    if not (form and email and password):
         return error_response(
             error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED
         )
@@ -73,7 +78,7 @@ def login_employee():
             code=HTTPStatus.OK,
             token=security.create_token(employee),
         )
-    
+
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
 
 
@@ -84,7 +89,7 @@ def refresh_expiring_jwts(success_response):
         if employee_id:
             expiresIn = get_jwt()["exp"]
             new_access_token = security.refresh_token(expiresIn, employee_id)
-            set_access_cookies(success_response, new_access_token )
+            set_access_cookies(success_response, new_access_token)
         return success_response
 
     except (RuntimeError, KeyError):
