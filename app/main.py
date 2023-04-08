@@ -1,11 +1,10 @@
 from flask import Flask
+from flask_jwt_extended import JWTManager
 
 from app.core.security import security
 from app.core.settings import settings
 from app.ents.base.crud import db, migrate
 from app.ents.employee import employee_blueprint
-
-from flask_jwt_extended import JWTManager
 
 
 def init_db(app: Flask) -> None:
