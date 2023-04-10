@@ -20,7 +20,8 @@ class Security:
     def verify_password(self, hashed_password: str, password: str) -> bool:
         """Returns `True` if `password` hashes to `hashed_password`."""
         return self.bcrypt.check_password_hash(hashed_password, password)
-
+    
+    '''
     def create_token(self, user_id):
         """Creates a JWT token with the `id` of the `user`."""
         token = jwt.encode(
@@ -37,6 +38,8 @@ class Security:
 
         return token
 
+    '''
+    
     def verify_token(self):
         """Returns the decoded token in the request header (if valid)."""
         token = None
@@ -58,14 +61,7 @@ class Security:
                 error=InvalidTokenError.msg, code=HTTPStatus.UNAUTHORIZED
             )
 
-    def refresh_token(self, exp_timestamp, employee_id):
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(
-            now + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-        )
-        if target_timestamp >= exp_timestamp:
-            token = security.create_token(employee_id)
-            return token
-
 
 security = Security()
+
+

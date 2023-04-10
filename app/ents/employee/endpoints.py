@@ -1,12 +1,15 @@
 import json
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
 from flask import Blueprint, request
 from flask_jwt_extended import (get_jwt, get_jwt_identity, jwt_required,
-                                set_access_cookies)
+                                set_access_cookies, set_refresh_cookies,
+                                create_access_token, create_refresh_token)
 from pydantic import ValidationError
 
 from app.core.security import security
+from app.core.settings import settings
 from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
@@ -66,25 +69,39 @@ def login_employee():
 
     employee = authenticate(crud, email, password)
     if employee:
-        return success_response(
+        access_token = create_access_token(employee.id, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        refresh_token = create_refresh_token(employee.id, expires_delta=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
+
+        response= success_response(
             data=EmployeeRead(**employee.dict()),
             code=HTTPStatus.OK,
-            token=security.create_token(employee.id),
+            token=access_token,
         )
+
+        set_refresh_cookies(response, refresh_token)
+
+        return response
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
 
 
-@bp.after_request
-def refresh_expiring_jwts(success_response):
+@bp.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
     try:
         employee_id = str(get_jwt_identity())
-        if employee_id:
-            expiresIn = get_jwt()["exp"]
-            new_access_token = security.refresh_token(expiresIn, employee_id)
-            set_access_cookies(success_response, new_access_token)
-        return success_response
-
+        new_access_token = create_access_token(employee_id, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        employee = crud.read_by_id(employee_id=employee_id)
+        if employee:
+            return success_response(
+                data=EmployeeRead(**employee.dict()),
+                code=HTTPStatus.OK,
+                token=new_access_token,
+            )
+               
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original response
-        return success_response
+        return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
+        
+
+
