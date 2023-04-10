@@ -8,10 +8,11 @@ from flask import (
     make_response
 )
 from flask_jwt_extended import (
-    get_jwt,
     get_jwt_identity,
     jwt_required,
-    decode_token
+    create_access_token,
+    create_refresh_token,
+    set_refresh_cookies
 )
 from pydantic import ValidationError
 
@@ -83,8 +84,8 @@ def login_employee():
 
     employee = authenticate(crud, email, password)
     if employee:
-        access_token = security.create_token(employee.id)
-        refresh_token = security.create_refresh_token(employee.id)
+        access_token = create_access_token(employee.id, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        refresh_token = create_refresh_token(employee.id, expires_delta=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
 
         resp= success_response(
             data=EmployeeRead(**employee.dict()),
@@ -93,39 +94,30 @@ def login_employee():
         )
         response = make_response(resp)
 
-        response.set_cookie(
-            settings.REFRESH_TOKEN_COOKIE_KEY_NAME, 
-            refresh_token, 
-            expires=datetime.timestamp(
-            datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)),
-            httponly=True
-        )
+        set_refresh_cookies(response, refresh_token)
 
         return response
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
 
 
-@bp.after_request
-def refresh_expiring_jwts(response):
+@bp.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
     try:
-        refresh_token = request.cookies.get(settings.REFRESH_TOKEN_COOKIE_KEY_NAME)
         employee_id = str(get_jwt_identity())
-
-        if refresh_token and employee_id:
-            decoded_refresh_token = decode_token(refresh_token)
-            expiration_of_refresh_token = decoded_refresh_token["exp"]
-            expiration_of_access_token = get_jwt()["exp"]
-
-            new_access_token = security.refresh_access_token(expiration_of_access_token, expiration_of_refresh_token, employee_id)
-            if new_access_token:
-                response.headers["Authorization"] = new_access_token
-
-        return response
+        new_access_token = create_access_token(employee_id, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        employee = crud.read_by_id(employee_id=employee_id)
+        if employee:
+            return success_response(
+                data=EmployeeRead(**employee.dict()),
+                code=HTTPStatus.OK,
+                token=new_access_token,
+            )
                
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original response
-        return response
-
+        return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
+        
 
 
