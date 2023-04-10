@@ -21,6 +21,25 @@ class Security:
         """Returns `True` if `password` hashes to `hashed_password`."""
         return self.bcrypt.check_password_hash(hashed_password, password)
     
+    '''
+    def create_token(self, user_id):
+        """Creates a JWT token with the `id` of the `user`."""
+        token = jwt.encode(
+            payload={
+                "sub": user_id,
+                "exp": (
+                    datetime.utcnow()
+                    + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+                ).timestamp(),
+            },
+            key=settings.JWT_SECRET_KEY,  # type: ignore
+            algorithm="HS256",
+        )
+
+        return token
+
+    '''
+    
     def verify_token(self):
         """Returns the decoded token in the request header (if valid)."""
         token = None
