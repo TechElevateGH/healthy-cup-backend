@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request
 from flask_jwt_extended import (get_jwt, get_jwt_identity, jwt_required,
                                 set_access_cookies, set_refresh_cookies,
                                 create_access_token, create_refresh_token)
@@ -72,12 +72,11 @@ def login_employee():
         access_token = create_access_token(employee.id, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
         refresh_token = create_refresh_token(employee.id, expires_delta=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
 
-        resp= success_response(
+        response= success_response(
             data=EmployeeRead(**employee.dict()),
             code=HTTPStatus.OK,
             token=access_token,
         )
-        response = make_response(resp)
 
         set_refresh_cookies(response, refresh_token)
 
