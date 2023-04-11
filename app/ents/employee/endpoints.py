@@ -1,22 +1,21 @@
 import json
-from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 
 from flask import Blueprint, request
-from flask_jwt_extended import (get_jwt, get_jwt_identity, jwt_required,
-                                set_access_cookies, set_refresh_cookies,
-                                create_access_token, create_refresh_token)
+from flask_jwt_extended import jwt_required, set_refresh_cookies
 from pydantic import ValidationError
 
 from app.core.security import security
-from app.core.settings import settings
 from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
 from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
 from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
-from app.utilities.reponses import (error_response, success_response,
-                                    success_response_multi,
-                                    validation_error_response)
+from app.utilities.reponses import (
+    error_response,
+    success_response,
+    success_response_multi,
+    validation_error_response,
+)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
@@ -57,7 +56,7 @@ def get_employee(employee_id: str):
 
 
 @bp.route("/login", methods=["POST"])
-def login_employee():
+def login():
     """Log in an employee."""
     form = request.form
     email, password = form.get("email"), form.get("password")
@@ -69,39 +68,14 @@ def login_employee():
 
     employee = authenticate(crud, email, password)
     if employee:
-        access_token = create_access_token(employee.id, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-        refresh_token = create_refresh_token(employee.id, expires_delta=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES))
-
-        response= success_response(
+        tokens = security.create_auth_tokens(employee.id)
+        response = success_response(
             data=EmployeeRead(**employee.dict()),
             code=HTTPStatus.OK,
-            token=access_token,
+            token=tokens[0],
         )
 
-        set_refresh_cookies(response, refresh_token)
-
+        set_refresh_cookies(response, tokens[1])
         return response
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
-
-
-@bp.route("/refresh", methods=["POST"])
-@jwt_required(refresh=True)
-def refresh():
-    try:
-        employee_id = str(get_jwt_identity())
-        new_access_token = create_access_token(employee_id, expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-        employee = crud.read_by_id(employee_id=employee_id)
-        if employee:
-            return success_response(
-                data=EmployeeRead(**employee.dict()),
-                code=HTTPStatus.OK,
-                token=new_access_token,
-            )
-               
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original response
-        return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
-        
-
-
