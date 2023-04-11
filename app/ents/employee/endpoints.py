@@ -79,3 +79,14 @@ def login():
         return response
 
     return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
+
+
+@bp.route("/<string:employee_id>", methods=["PUT"])
+def update_employee(employee_id: str):
+    return ""
+
+
+# * Implement after SMTP integration
+@bp.route("/<string:employee_id>/password-reset", methods=["POST"])
+def reset_password(employee_id: str):
+    return ""

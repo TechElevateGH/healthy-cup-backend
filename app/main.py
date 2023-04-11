@@ -15,9 +15,9 @@ def init_db(app: Flask) -> None:
 
     db.init_app(app)
 
-    # *  Will later create tables with Alembic
-    with app.app_context():
-        db.create_all()
+    # *  Create tables with Alembic
+    # with app.app_context():
+    #     db.create_all()
 
 
 def register_blueprints(app: Flask) -> None:
