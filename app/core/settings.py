@@ -1,7 +1,13 @@
 from typing import Any, Optional, Union
 
-from pydantic import (AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn,
-                      parse_obj_as, validator)
+from pydantic import (
+    AnyHttpUrl,
+    BaseSettings,
+    EmailStr,
+    PostgresDsn,
+    parse_obj_as,
+    validator,
+)
 
 
 class Settings(BaseSettings):
@@ -10,7 +16,7 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int  # 60 * 24 * 8  # 8 days
     REFRESH_TOKEN_EXPIRE_MINUTES: int
-    SERVER_NAME: str = "localhost"
+    SERVER_NAME: str
     SERVER_HOST: AnyHttpUrl = parse_obj_as(AnyHttpUrl, "http://127.0.0.1:8000")
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = ["http://localhost:3000"]  # type: ignore
 
