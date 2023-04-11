@@ -13,12 +13,8 @@ class Admin(db.Model):  # type: ignore
     password = Column(String)
     role = Column(String)
 
-    def __init__(
-        self,
-        email: str,
-        username: str,
-        password: str,
-    ) -> None:
+    def __init__(self, email: str, username: str, password: str, role: str) -> None:
         self.email = email
         self.username = username
         self.password = password
+        self.role = role
