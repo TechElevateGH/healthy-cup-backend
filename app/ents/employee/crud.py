@@ -32,6 +32,7 @@ class EmployeeCRUD(CRUDBase[Employee, EmployeeInDB, EmployeeReadDB]):
         employee_obj = EmployeeInDB(
             full_name=self.__create_full_name(employee_in), **employee_in.dict()
         )
+        print(employee_obj)
 
         return super().create(employee_obj)
 

@@ -1,12 +1,12 @@
 # from functools import wraps
 
 from app.core.security import security
-from app.ents.employee.crud import EmployeeCRUD
 
 
-def authenticate(crud: EmployeeCRUD, email: str, password: str):
+def authenticate(crud, email: str, password: str):
     """Authenticates a user using `email` and `password`."""
     user = crud.read_by_email(email)  # type: ignore
+    print("User: =====>>>>", user)
     if not user:
         return None
 

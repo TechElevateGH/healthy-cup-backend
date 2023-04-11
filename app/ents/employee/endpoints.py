@@ -2,20 +2,19 @@ import json
 from http import HTTPStatus
 
 from flask import Blueprint, request
-from flask_jwt_extended import jwt_required, set_refresh_cookies
+from flask_jwt_extended import set_refresh_cookies
 from pydantic import ValidationError
 
 from app.core.security import security
+from app.ents.admin.deps import admin_required
 from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
-from app.ents.employee.schema import EmployeeCreateInput, EmployeeRead
-from app.utilities.errors import EmployeeDoesNotExist, MissingLoginCredentials
-from app.utilities.reponses import (
-    error_response,
-    success_response,
-    success_response_multi,
-    validation_error_response,
-)
+from app.ents.employee.schema import (EmployeeCreateInput, EmployeeLoginInput,
+                                      EmployeeRead)
+from app.utilities.errors import MissingLoginCredentials, UserDoesNotExist
+from app.utilities.reponses import (error_response, success_response,
+                                    success_response_multi,
+                                    validation_error_response)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
@@ -37,9 +36,10 @@ def create_employee():
 
 
 @bp.route("/", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_employees():
     """Get all employees."""
+
     employees = [EmployeeRead(**employee.dict()) for employee in crud.read_multi()]
     return success_response_multi(data=employees, code=HTTPStatus.OK)
 
@@ -58,24 +58,33 @@ def get_employee(employee_id: str):
 @bp.route("/login", methods=["POST"])
 def login():
     """Log in an employee."""
-    form = request.form
-    email, password = form.get("email"), form.get("password")
+    try:
+        data = EmployeeLoginInput(**request.form)
+        employee = authenticate(crud, data.email, data.password)
+        if employee:
+            tokens = security.create_auth_tokens(employee.id)
+            response = success_response(
+                data=EmployeeRead(**employee.dict()),
+                code=HTTPStatus.OK,
+                token=tokens[0],
+            )
 
-    if not (form and email and password):
+            set_refresh_cookies(response, tokens[1])
+            return response
+
+        return error_response(error=UserDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
+    except ValidationError:
         return error_response(
             error=MissingLoginCredentials.msg, code=HTTPStatus.UNAUTHORIZED
         )
 
-    employee = authenticate(crud, email, password)
-    if employee:
-        tokens = security.create_auth_tokens(employee.id)
-        response = success_response(
-            data=EmployeeRead(**employee.dict()),
-            code=HTTPStatus.OK,
-            token=tokens[0],
-        )
 
-        set_refresh_cookies(response, tokens[1])
-        return response
+@bp.route("/<string:employee_id>", methods=["PUT"])
+def update_employee(employee_id: str):
+    return ""
 
-    return error_response(error=EmployeeDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
+
+# * Implement after SMTP integration
+@bp.route("/<string:employee_id>/password-reset", methods=["POST"])
+def reset_password(employee_id: str):
+    return ""

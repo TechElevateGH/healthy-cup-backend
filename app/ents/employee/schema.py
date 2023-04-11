@@ -19,6 +19,7 @@ class EmployeeCreateInput(EmployeeBase):
 class EmployeeRead(EmployeeBase):
     """Schema for an employee that is read."""
 
+    id: int
     full_name: str
 
 
@@ -40,3 +41,8 @@ class EmployeeInDB(EmployeeCreateInput):
     """Database schema for adding an employee."""
 
     full_name: str = ""
+
+
+class EmployeeLoginInput(BaseModel):
+    email: str
+    password: str

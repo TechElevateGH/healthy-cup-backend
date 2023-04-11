@@ -10,5 +10,5 @@ class MissingLoginCredentials:
     msg = "Missing username or password."
 
 
-class EmployeeDoesNotExist:
+class UserDoesNotExist:
     msg = "Wrong email or password."
