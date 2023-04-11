@@ -9,12 +9,18 @@ from app.core.security import security
 from app.ents.admin.deps import admin_required
 from app.ents.base.deps import authenticate
 from app.ents.employee.crud import crud
-from app.ents.employee.schema import (EmployeeCreateInput, EmployeeLoginInput,
-                                      EmployeeRead)
+from app.ents.employee.schema import (
+    EmployeeCreateInput,
+    EmployeeLoginInput,
+    EmployeeRead,
+)
 from app.utilities.errors import MissingLoginCredentials, UserDoesNotExist
-from app.utilities.reponses import (error_response, success_response,
-                                    success_response_multi,
-                                    validation_error_response)
+from app.utilities.reponses import (
+    error_response,
+    success_response,
+    success_response_multi,
+    validation_error_response,
+)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
@@ -39,7 +45,6 @@ def create_employee():
 @admin_required
 def get_employees():
     """Get all employees."""
-
     employees = [EmployeeRead(**employee.dict()) for employee in crud.read_multi()]
     return success_response_multi(data=employees, code=HTTPStatus.OK)
 
