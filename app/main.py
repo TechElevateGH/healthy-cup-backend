@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager
 
 from app.core.security import security
 from app.core.settings import settings
+from app.ents.base import base_endpoints
 from app.ents.base.crud import db, migrate
 from app.ents.employee import employee_blueprint
 
@@ -22,6 +23,7 @@ def init_db(app: Flask) -> None:
 def register_blueprints(app: Flask) -> None:
     """Register `app` blueprints."""
     app.register_blueprint(employee_blueprint)
+    app.register_blueprint(base_endpoints)
 
 
 def configure_jwt(app: Flask) -> None:

@@ -1,13 +1,9 @@
-from datetime import datetime, timedelta, timezone
-from http import HTTPStatus
+from datetime import timedelta
 
-import jwt
-from flask import request
 from flask_bcrypt import Bcrypt
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 from app.core.settings import settings
-from app.utilities.errors import InvalidTokenError, MissingTokenError
-from app.utilities.reponses import error_response
 
 
 class Security:
@@ -20,48 +16,18 @@ class Security:
     def verify_password(self, hashed_password: str, password: str) -> bool:
         """Returns `True` if `password` hashes to `hashed_password`."""
         return self.bcrypt.check_password_hash(hashed_password, password)
-    
-    '''
-    def create_token(self, user_id):
-        """Creates a JWT token with the `id` of the `user`."""
-        token = jwt.encode(
-            payload={
-                "sub": user_id,
-                "exp": (
-                    datetime.utcnow()
-                    + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-                ).timestamp(),
-            },
-            key=settings.JWT_SECRET_KEY,  # type: ignore
-            algorithm="HS256",
+
+    def create_auth_tokens(self, user_id: int):
+        access_token = create_access_token(
+            user_id,
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        )
+        refresh_token = create_refresh_token(
+            user_id,
+            expires_delta=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
         )
 
-        return token
-
-    '''
-    
-    def verify_token(self):
-        """Returns the decoded token in the request header (if valid)."""
-        token = None
-
-        token = request.headers.get("Authorization")
-        if not token:
-            return error_response(
-                error=MissingTokenError.msg, code=HTTPStatus.UNAUTHORIZED
-            )
-
-        try:
-            key = settings.SECRET_KEY
-            decoded_token = jwt.decode(
-                token, key=key if key else "", algorithms=["HS256"]
-            )
-            return decoded_token
-        except:
-            return error_response(
-                error=InvalidTokenError.msg, code=HTTPStatus.UNAUTHORIZED
-            )
+        return access_token, refresh_token
 
 
 security = Security()
-
-
