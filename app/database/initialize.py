@@ -14,3 +14,4 @@ def init_db(db: Session) -> None:
     #         role=Role.board.value,
     #     )
     #     superuser = employee.crud.user.create(db, obj_in=user_in)  # noqa: F841
+    ...

@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 db = SQLAlchemy()
 
-
 ModelType = TypeVar("ModelType", bound=db.Model)  # type: ignore
 DBSchemaType = TypeVar("DBSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)

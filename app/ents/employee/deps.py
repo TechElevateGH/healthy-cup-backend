@@ -1,5 +1,0 @@
-class EmployeeDeps:
-    ...
-
-
-deps = EmployeeDeps()

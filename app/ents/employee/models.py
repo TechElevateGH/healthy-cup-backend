@@ -1,3 +1,5 @@
+from sqlalchemy import Boolean, Column, Integer, String
+
 from app.ents.base.crud import db
 
 
@@ -5,13 +7,15 @@ class Employee(db.Model):  # type: ignore
     """Employees Table"""
 
     __tablename__ = "employees"
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String)
-    middle_name = db.Column(db.String)
-    last_name = db.Column(db.String)
-    email = db.Column(db.String)
-    full_name = db.Column(db.String)
-    password = db.Column(db.String)
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String)
+    middle_name = Column(String)
+    last_name = Column(String)
+    email = Column(String)
+    full_name = Column(String)
+    password = Column(String)
+    is_supervisor = Column(Boolean)
+    role = Column(String)
 
     def __init__(
         self,
