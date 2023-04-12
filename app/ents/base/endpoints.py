@@ -24,7 +24,7 @@ def refresh():
         return (
             {"data": "Success, Token refreshed!"},
             HTTPStatus.OK,
-            {"Authorization": new_access_token},
+            {"Authorization": f"Bearer {new_access_token}"},
         )
     except (RuntimeError, KeyError):
         return error_response(error=InvalidTokenError.msg, code=HTTPStatus.BAD_REQUEST)

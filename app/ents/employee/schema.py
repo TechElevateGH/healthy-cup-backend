@@ -8,6 +8,7 @@ class EmployeeBase(BaseModel):
     middle_name: str = ""
     last_name: str
     email: EmailStr
+    active: bool = True
 
 
 class EmployeeCreateInput(EmployeeBase):

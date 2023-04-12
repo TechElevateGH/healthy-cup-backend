@@ -17,13 +17,13 @@ class Security:
         """Returns `True` if `password` hashes to `hashed_password`."""
         return self.bcrypt.check_password_hash(hashed_password, password)
 
-    def create_auth_tokens(self, user_id: int):
+    def create_auth_tokens(self, user_email: str):
         access_token = create_access_token(
-            user_id,
+            user_email,
             expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         )
         refresh_token = create_refresh_token(
-            user_id,
+            user_email,
             expires_delta=timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
         )
 
