@@ -16,6 +16,7 @@ class Employee(db.Model):  # type: ignore
     password = Column(String)
     is_supervisor = Column(Boolean)
     role = Column(String)
+    active = Column(Boolean)
 
     def __init__(
         self,
@@ -25,6 +26,7 @@ class Employee(db.Model):  # type: ignore
         email: str,
         full_name: str,
         password: str,
+        active: bool,
     ) -> None:
         self.first_name = first_name
         self.middle_name = middle_name
@@ -32,3 +34,4 @@ class Employee(db.Model):  # type: ignore
         self.email = email
         self.full_name = full_name
         self.password = password
+        self.active = active

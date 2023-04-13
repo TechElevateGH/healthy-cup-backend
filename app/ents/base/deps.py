@@ -6,12 +6,15 @@ from app.core.security import security
 def authenticate(crud, email: str, password: str):
     """Authenticates a user using `email` and `password`."""
     user = crud.read_by_email(email)  # type: ignore
-    print("User: =====>>>>", user)
     if not user:
         return None
 
     if security.verify_password(user.password, password):
         return user
+
+
+def is_active(user):
+    return None if not user else (user if user.active else None)
 
 
 # def active_employee_required(crud, f):

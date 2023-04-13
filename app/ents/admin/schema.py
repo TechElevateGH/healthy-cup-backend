@@ -7,6 +7,7 @@ class AdminBase(BaseModel):
     username: str
     email: EmailStr
     role: str = "admin"
+    active: bool = True
 
 
 class AdminCreateInput(AdminBase):

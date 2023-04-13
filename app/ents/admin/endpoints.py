@@ -6,10 +6,10 @@ from flask_jwt_extended import set_refresh_cookies
 from pydantic import ValidationError
 
 from app.core.security import security
-from app.ents.admin.crud import crud
+from app.ents.admin.crud import crud as admin_crud
 from app.ents.admin.deps import admin_required
 from app.ents.admin.schema import AdminCreateInput, AdminLoginInput, AdminRead
-from app.ents.base.deps import authenticate
+from app.ents.base.deps import authenticate, is_active
 from app.utilities.errors import MissingLoginCredentials, UserDoesNotExist
 from app.utilities.reponses import (error_response, success_response,
                                     success_response_multi,
@@ -24,12 +24,12 @@ def create_admin():
     try:
         data = json.loads(request.data)
         admin = AdminCreateInput(**data)
-        if crud.read_by_email(admin.email):
+        if admin_crud.read_by_email(admin.email):
             return error_response(
                 error="Admin with email already exists!",
                 code=HTTPStatus.NOT_ACCEPTABLE,
             )
-        return success_response(data=crud.create(admin), code=HTTPStatus.CREATED)
+        return success_response(data=admin_crud.create(admin), code=HTTPStatus.CREATED)
     except ValidationError as e:
         return validation_error_response(error=e, code=HTTPStatus.BAD_REQUEST)
 
@@ -38,14 +38,14 @@ def create_admin():
 @admin_required
 def get_admins():
     """Get all admins."""
-    admins = [AdminRead(**admin.dict()) for admin in crud.read_multi()]
+    admins = [AdminRead(**admin.dict()) for admin in admin_crud.read_multi()]
     return success_response_multi(data=admins, code=HTTPStatus.OK)
 
 
 @bp.route("/<string:admin_id>", methods=["GET"])
 def get_admin(admin_id: str):
     """Get admin with id `admin_id`."""
-    admin = crud.read_by_id(admin_id=admin_id)
+    admin = admin_crud.read_by_id(admin_id=admin_id)
     return (
         success_response(data=AdminRead(**admin.dict()), code=HTTPStatus.OK)
         if admin
@@ -58,16 +58,16 @@ def login():
     """Log in an admin."""
     try:
         data = AdminLoginInput(**request.form)
-        admin = authenticate(crud, data.email, data.password)
+        admin = is_active(authenticate(admin_crud, data.email, data.password))
         if admin:
-            tokens = security.create_auth_tokens(admin.id)
+            tokens = security.create_auth_tokens(admin.email)
             response = success_response(
                 data=AdminRead(**admin.dict()),
                 code=HTTPStatus.OK,
                 token=tokens[0],
             )
 
-            set_refresh_cookies(response, tokens[1])
+            set_refresh_cookies(response, f"Bearer {tokens[1]}")
             return response
 
         return error_response(error=UserDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
