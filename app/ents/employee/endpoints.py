@@ -2,7 +2,6 @@ import json
 from http import HTTPStatus
 
 from flask import Blueprint, request
-from flask_jwt_extended import set_refresh_cookies
 from pydantic import ValidationError
 
 from app.core.security import security
@@ -87,11 +86,11 @@ def employee_client_login():
             tokens = security.create_auth_tokens(client.email)
             response = ...
 
-        set_refresh_cookies(response, tokens[1])
         return success_response(
             data=response,
             code=HTTPStatus.OK,
-            token=tokens[0],
+            headers={"Authorization": f"Bearer {tokens[0]}"},
+            cookies={"refresh_token": f"Bearer {tokens[1]}"},
         )
     except ValidationError:
         return error_response(

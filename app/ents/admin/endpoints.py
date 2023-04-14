@@ -2,7 +2,6 @@ import json
 from http import HTTPStatus
 
 from flask import Blueprint, request
-from flask_jwt_extended import set_refresh_cookies
 from pydantic import ValidationError
 
 from app.core.security import security
@@ -61,14 +60,12 @@ def login():
         admin = is_active(authenticate(admin_crud, data.email, data.password))
         if admin:
             tokens = security.create_auth_tokens(admin.email)
-            response = success_response(
+            return success_response(
                 data=AdminRead(**admin.dict()),
                 code=HTTPStatus.OK,
-                token=tokens[0],
+                headers={"Authorization": f"Bearer {tokens[0]}"},
+                cookies={"refresh_token": f"Bearer {tokens[1]}"},
             )
-
-            set_refresh_cookies(response, f"Bearer {tokens[1]}")
-            return response
 
         return error_response(error=UserDoesNotExist.msg, code=HTTPStatus.BAD_REQUEST)
     except ValidationError:
