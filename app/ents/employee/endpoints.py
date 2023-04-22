@@ -98,6 +98,7 @@ def employee_client_login():
         )
 
 
+# TODO
 @bp.route("/<string:employee_id>", methods=["PUT"])
 def update_employee(employee_id: str):
     return ""
