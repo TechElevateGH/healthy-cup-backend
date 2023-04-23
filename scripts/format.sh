@@ -21,4 +21,4 @@ isort --recursive --check-only app
 flake8
 
 #* Test coverage generated via HTML
-# pytest --cov=app --cov-report=html app/tests "${@}"
+pytest --cov=app --cov-report=html app/tests "${@}"
