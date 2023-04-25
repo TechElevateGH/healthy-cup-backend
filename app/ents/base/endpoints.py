@@ -28,3 +28,14 @@ def refresh():
         )
     except (RuntimeError, KeyError):
         return error_response(error=InvalidTokenError.msg, code=HTTPStatus.BAD_REQUEST)
+
+
+'''
+ #test sentry integration
+@bp.route("/sentry", methods=["GET"])
+def trigger_error():
+    test = 1 / 0
+    return error_response(error=InvalidTokenError.msg, code=HTTPStatus.BAD_REQUEST)
+ 
+ '''   
+

@@ -9,6 +9,9 @@ from app.ents.base import base_endpoints
 from app.ents.base.crud import db
 from app.ents.employee import employee_blueprint
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
 migrate = Migrate()
 
 
@@ -25,6 +28,18 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(employee_blueprint)
     app.register_blueprint(base_endpoints)
     app.register_blueprint(admin_blueprint)
+
+sentry_sdk.init(
+    dsn = settings.SENTRY_DSN,
+    integrations=[
+        FlaskIntegration(),
+    ],
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0
+)
 
 
 def create_app() -> Flask:
