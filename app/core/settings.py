@@ -3,8 +3,6 @@ from typing import Any, Optional, Union
 from pydantic import (AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn,
                       parse_obj_as, validator)
 
-import sentry_sdk
-
 
 class Settings(BaseSettings):
     API_STR: str = "/jfarms"
