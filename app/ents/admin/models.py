@@ -4,8 +4,6 @@ from app.ents.base.crud import db
 
 
 class Admin(db.Model):  # type: ignore
-    """Admins Table"""
-
     __tablename__ = "admins"
     id = Column(Integer, primary_key=True)
     email = Column(String)

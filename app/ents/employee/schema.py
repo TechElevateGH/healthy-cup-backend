@@ -17,9 +17,17 @@ class EmployeeCreateInput(EmployeeBase):
     password: str
 
 
-class EmployeeRead(EmployeeBase):
-    """Schema for an employee that is read."""
+class EmployeeReadEmployee(EmployeeBase):
+    id: int
+    full_name: str
 
+
+class EmployeeReadSupervisor(EmployeeBase):
+    id: int
+    full_name: str
+
+
+class EmployeeClientReadEmployee(EmployeeBase):
     id: int
     full_name: str
 
@@ -28,14 +36,6 @@ class EmployeeUpdate(EmployeeBase):
     """Schema for updating employees."""
 
     ...
-
-
-class EmployeeReadDB(EmployeeBase):
-    """Schema for an employee that is read directly from DB."""
-
-    id: int
-    full_name: str
-    password: str
 
 
 class EmployeeInDB(EmployeeCreateInput):
