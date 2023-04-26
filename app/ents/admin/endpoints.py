@@ -10,12 +10,9 @@ from app.ents.admin.deps import admin_required
 from app.ents.admin.schema import AdminCreateInput, AdminLoginInput, AdminRead
 from app.ents.base.deps import authenticate, is_active
 from app.utilities.errors import MissingLoginCredentials, UserDoesNotExist
-from app.utilities.reponses import (
-    error_response,
-    success_response,
-    success_response_multi,
-    validation_error_response,
-)
+from app.utilities.reponses import (error_response, success_response,
+                                    success_response_multi,
+                                    validation_error_response)
 
 bp = Blueprint("admins", __name__, url_prefix="/admins")
 

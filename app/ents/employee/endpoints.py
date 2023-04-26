@@ -2,24 +2,19 @@ import json
 from http import HTTPStatus
 
 from flask import Blueprint, request
-from app.ents.employee.schema import EmployeeReadSupervisor
 from pydantic import ValidationError
 
 from app.core.security import security
 from app.ents.admin.deps import admin_required
 from app.ents.base.deps import authenticate, is_active
 from app.ents.employee.crud import crud as employee_crud
-from app.ents.employee.schema import (
-    EmployeeCreateInput,
-    EmployeeLoginInput,
-)
+from app.ents.employee.schema import (EmployeeCreateInput, EmployeeLoginInput,
+                                      EmployeeReadEmployee,
+                                      EmployeeReadSupervisor)
 from app.utilities.errors import MissingLoginCredentials, UserDoesNotExist
-from app.utilities.reponses import (
-    error_response,
-    success_response,
-    success_response_multi,
-    validation_error_response,
-)
+from app.utilities.reponses import (error_response, success_response,
+                                    success_response_multi,
+                                    validation_error_response)
 
 bp = Blueprint("employees", __name__, url_prefix="/employees")
 
