@@ -9,7 +9,8 @@ from app.ents.admin.deps import admin_required
 from app.ents.base.deps import authenticate, is_active
 from app.ents.employee.crud import crud as employee_crud
 from app.ents.employee.schema import (EmployeeCreateInput, EmployeeLoginInput,
-                                      EmployeeRead)
+                                      EmployeeReadEmployee,
+                                      EmployeeReadSupervisor)
 from app.utilities.errors import MissingLoginCredentials, UserDoesNotExist
 from app.utilities.reponses import (error_response, success_response,
                                     success_response_multi,
@@ -29,8 +30,10 @@ def create_employee():
                 error="Employee with email already exists!",
                 code=HTTPStatus.NOT_ACCEPTABLE,
             )
+        new_employee = employee_crud.create(employee)
         return success_response(
-            data=employee_crud.create(employee), code=HTTPStatus.CREATED
+            data=EmployeeReadSupervisor(**vars(new_employee)),
+            code=HTTPStatus.CREATED,
         )
     except ValidationError as e:
         return validation_error_response(error=e, code=HTTPStatus.BAD_REQUEST)
@@ -41,7 +44,8 @@ def create_employee():
 def get_employees():
     """Get all employees."""
     employees = [
-        EmployeeRead(**employee.dict()) for employee in employee_crud.read_multi()
+        EmployeeReadSupervisor(**vars(employee))
+        for employee in employee_crud.read_multi()
     ]
     return success_response_multi(data=employees, code=HTTPStatus.OK)
 
@@ -51,7 +55,9 @@ def get_employee(employee_id: str):
     """Get employee with id `employee_id`."""
     employee = employee_crud.read_by_id(employee_id=employee_id)
     return (
-        success_response(data=EmployeeRead(**employee.dict()), code=HTTPStatus.OK)
+        success_response(
+            data=EmployeeReadSupervisor.parse_obj(employee), code=HTTPStatus.OK
+        )
         if employee
         else error_response(error="Employee does not exist.", code=HTTPStatus.NOT_FOUND)
     )
@@ -63,7 +69,7 @@ def get_employee(employee_id: str):
 def employee_client_login():
     """Log in an employee."""
     try:
-        data = EmployeeLoginInput(**request.form)
+        data = EmployeeLoginInput.parse_obj(request.form)
         employee = is_active(authenticate(employee_crud, data.email, data.password))
         client = None
 
@@ -80,7 +86,7 @@ def employee_client_login():
 
         elif employee:
             tokens = security.create_auth_tokens(employee.email)
-            response = EmployeeRead(**employee.dict())
+            response = EmployeeReadEmployee(**vars(employee))
 
         elif client:
             tokens = security.create_auth_tokens(client.email)
