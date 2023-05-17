@@ -24,7 +24,7 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "JFarms"
 
-    # SENTRY_DSN: Optional[HttpUrl]
+    SENTRY_DSN: str = "https://64fe1f391fa945bb99263838c6aaa330@o4505076940734464.ingest.sentry.io/4505077002928128"
 
     # @validator("SENTRY_DSN", pre=True)
     # def sentry_dsn_can_be_blank(cls, v: str) -> Optional[str]:
