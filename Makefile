@@ -3,7 +3,7 @@
 all: run
 
 run:
-		flask run
+		docker-compose run
 
 clean:
 	find . | grep -E "(/__pycache__)" | xargs rm -rf
@@ -20,5 +20,10 @@ deps:
 
 freeze:
     pip freeze > requirements.txt
+
+build:
+	docker-compose build
+
+
 
 
